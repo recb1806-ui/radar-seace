@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Radar SEACE - Oportunidades del Estado</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-slate-100 text-slate-800 pb-24 font-sans select-none">
+
+  <!-- ENCABEZADO FIJO -->
+  <header class="bg-slate-900 text-white sticky top-0 z-30 shadow-md px-4 py-3">
+    <div class="max-w-md mx-auto flex items-center justify-between">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="bg-emerald-500 w-2.5 h-2.5 rounded-full animate-pulse"></span>
+          <h1 class="font-bold text-lg tracking-tight">Radar SEACE</h1>
+        </div>
+        <p id="header-empresa" class="text-xs text-slate-400 truncate max-w-[230px]">Cargando perfil...</p>
+      </div>
+      <button onclick="recargarDatos()" class="bg-slate-800 hover:bg-slate-700 text-xs px-3 py-1.5 rounded-lg border border-slate-700 flex items-center gap-1 active:scale-95 transition">
+        🔄 Actualizar
+      </button>
+    </div>
+  </header>
+
+  <!-- CONTENEDOR PRINCIPAL MÓVIL -->
+  <main class="max-w-md mx-auto p-4 space-y-4">
+
+    <!-- ALERTA DE PERMISOS O ESTADO -->
+    <div id="alerta-sistema" class="hidden bg-amber-50 border border-amber-300 text-amber-900 rounded-xl p-3 text-xs space-y-1"></div>
+
+    <!-- PESTAÑA 1: OPORTUNIDADES PARA TI (% MATCH) -->
+    <section id="tab-parati" class="space-y-3">
+      <div class="bg-gradient-to-r from-indigo-900 to-slate-900 text-white rounded-2xl p-4 shadow">
+        <div class="flex justify-between items-start">
+          <div>
+            <span class="text-[10px] uppercase tracking-wider bg-indigo-500/30 border border-indigo-400/40 px-2 py-0.5 rounded-full font-semibold">Motor Inteligente</span>
+            <h2 class="text-base font-bold mt-1">Oportunidades Para Ti</h2>
+            <p class="text-xs text-slate-300 mt-0.5">Filtradas automáticamente según tu RNP, experiencia facturada, palabras clave y región.</p>
+          </div>
+          <span id="contador-match" class="bg-emerald-500 text-slate-950 font-extrabold text-sm px-2.5 py-1 rounded-xl">0</span>
+        </div>
+      </div>
+
+      <div id="lista-parati" class="space-y-3">
+        <div class="text-center py-10 text-slate-400 text-sm">Analizando convocatorias vigentes...</div>
+      </div>
+    </section>
+
+    <!-- PESTAÑA 2: EXPLORAR TODOS LOS PROCESOS (FILTROS MULTICRITERIO) -->
+    <section id="tab-explorar" class="hidden space-y-3">
+      <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 space-y-3">
+        <h2 class="font-bold text-sm text-slate-800">Buscador Multicriterio SEACE</h2>
+
+        <!-- Buscador por palabra clave -->
+        <input id="filtro-texto" type="text" oninput="renderExplorar()" placeholder="🔍 Buscar ej: inventario, climatización, mobiliario..." class="w-full text-sm bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 focus:outline-none focus:border-indigo-600" />
+
+        <div class="grid grid-cols-2 gap-2">
+          <!-- Tipo de Oportunidad -->
+          <div>
+            <label class="text-[11px] font-semibold text-slate-500">Modalidad</label>
+            <select id="filtro-fuente" onchange="renderExplorar()" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 mt-0.5">
+              <option value="TODOS">Todas</option>
+              <option value="CONTRATO_MENOR">Contratos Menores (≤ 8 UIT)</option>
+              <option value="PROCEDIMIENTO_SELECCION">Procedimientos Selección</option>
+            </select>
+          </div>
+
+          <!-- Objeto -->
+          <div>
+            <label class="text-[11px] font-semibold text-slate-500">Objeto RNP</label>
+            <select id="filtro-objeto" onchange="renderExplorar()" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 mt-0.5">
+              <option value="TODOS">Todos</option>
+              <option value="BIENES">Bienes</option>
+              <option value="SERVICIOS">Servicios</option>
+              <option value="CONSULTORIA DE OBRAS">Consultoría de Obras</option>
+              <option value="OBRAS">Ejecución de Obras</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2 items-center">
+          <!-- Departamento -->
+          <div>
+            <label class="text-[11px] font-semibold text-slate-500">Departamento</label>
+            <select id="filtro-depto" onchange="renderExplorar()" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 mt-0.5">
+              <option value="TODOS">Todo el Perú</option>
+              <option value="LIMA">LIMA</option>
+              <option value="CALLAO">CALLAO</option>
+              <option value="LA LIBERTAD">LA LIBERTAD</option>
+              <option value="AREQUIPA">AREQUIPA</option>
+              <option value="CUSCO">CUSCO</option>
+              <option value="PIURA">PIURA</option>
+            </select>
+          </div>
+
+          <!-- Rango de Monto -->
+          <div>
+            <div class="flex justify-between text-[11px] font-semibold text-slate-500">
+              <span>Monto Máx:</span>
+              <span id="label-monto-max" class="text-indigo-600 font-bold">Sin límite</span>
+            </div>
+            <input id="filtro-monto" type="range" min="10000" max="1000000" step="10000" value="1000000" oninput="actualizarLabelMonto(); renderExplorar()" class="w-full mt-2 accent-indigo-600" />
+          </div>
+        </div>
+      </div>
+
+      <div id="lista-explorar" class="space-y-3"></div>
+    </section>
+
+    <!-- PESTAÑA 3: PERFIL DE MI EMPRESA -->
+    <section id="tab-perfil" class="hidden space-y-4">
+      <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 space-y-3">
+        <div>
+          <h2 class="font-bold text-base text-slate-800">Perfil de Mi Empresa</h2>
+          <p class="text-xs text-slate-500">Configura tu capacidad y rubros para que la pantalla inicial calcule tu % de compatibilidad.</p>
+        </div>
+
+        <div class="grid grid-cols-3 gap-2">
+          <div class="col-span-1">
+            <label class="text-xs font-semibold text-slate-600">RUC</label>
+            <input id="perf-ruc" type="text" maxlength="11" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 mt-1" />
+          </div>
+          <div class="col-span-2">
+            <label class="text-xs font-semibold text-slate-600">Razón Social</label>
+            <input id="perf-razon" type="text" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 mt-1" />
+          </div>
+        </div>
+
+        <div>
+          <label class="text-xs font-semibold text-slate-600">Objetos con RNP Vigente</label>
+          <div class="grid grid-cols-2 gap-2 mt-1 text-xs">
+            <label class="flex items-center gap-2 bg-slate-50 p-2 rounded-lg border"><input type="checkbox" class="chk-objeto" value="BIENES" /> Bienes</label>
+            <label class="flex items-center gap-2 bg-slate-50 p-2 rounded-lg border"><input type="checkbox" class="chk-objeto" value="SERVICIOS" /> Servicios</label>
+            <label class="flex items-center gap-2 bg-slate-50 p-2 rounded-lg border"><input type="checkbox" class="chk-objeto" value="CONSULTORIA DE OBRAS" /> Consultoría Obras</label>
+            <label class="flex items-center gap-2 bg-slate-50 p-2 rounded-lg border"><input type="checkbox" class="chk-objeto" value="OBRAS" /> Ejecución Obras</label>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-2">
+          <div>
+            <label class="text-[11px] font-semibold text-slate-600">Experiencia Fact. (S/)</label>
+            <input id="perf-exp" type="number" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 mt-1" />
+          </div>
+          <div>
+            <label class="text-[11px] font-semibold text-slate-600">Monto Mín (S/)</label>
+            <input id="perf-min" type="number" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 mt-1" />
+          </div>
+          <div>
+            <label class="text-[11px] font-semibold text-slate-600">Monto Máx (S/)</label>
+            <input id="perf-max" type="number" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 mt-1" />
+          </div>
+        </div>
+
+        <div>
+          <label class="text-xs font-semibold text-slate-600">Palabras Clave de tu Giro (separadas por coma)</label>
+          <textarea id="perf-kw" rows="2" placeholder="inventario, abastecimiento, archivo, mantenimiento, climatizacion" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 mt-1"></textarea>
+        </div>
+
+        <div>
+          <label class="text-xs font-semibold text-slate-600">Palabras a Excluir (separadas por coma)</label>
+          <input id="perf-ex" type="text" placeholder="vehicular, limpieza" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 mt-1" />
+        </div>
+
+        <div>
+          <label class="text-xs font-semibold text-slate-600">Departamentos de Interés (separados por coma o TODOS)</label>
+          <input id="perf-deptos" type="text" placeholder="LIMA, CALLAO" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 mt-1" />
+        </div>
+
+        <div class="grid grid-cols-2 gap-2 pt-1">
+          <label class="flex items-center gap-2 text-xs bg-slate-50 p-2 rounded-lg border">
+            <input id="perf-cm" type="checkbox" checked /> Contratos Menores (≤8 UIT)
+          </label>
+          <label class="flex items-center gap-2 text-xs bg-slate-50 p-2 rounded-lg border">
+            <input id="perf-ps" type="checkbox" checked /> Procedimientos Selección
+          </label>
+        </div>
+
+        <button onclick="guardarPerfil()" id="btn-guardar" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm py-3 rounded-xl shadow transition active:scale-98">
+          💾 Guardar Perfil y Recalcular Match
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- BARRA DE NAVEGACIÓN INFERIOR (ESTILO APP MÓVIL) -->
+  <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 z-30">
+    <div class="max-w-md mx-auto grid grid-cols-3 text-center">
+      <button onclick="cambiarTab('parati')" id="nav-parati" class="py-2.5 flex flex-col items-center text-indigo-600 font-bold text-xs">
+        <span class="text-lg">🎯</span>
+        <span>Para Ti</span>
+      </button>
+      <button onclick="cambiarTab('explorar')" id="nav-explorar" class="py-2.5 flex flex-col items-center text-slate-400 font-medium text-xs">
+        <span class="text-lg">🔎</span>
+        <span>Explorar SEACE</span>
+      </button>
+      <button onclick="cambiarTab('perfil')" id="nav-perfil" class="py-2.5 flex flex-col items-center text-slate-400 font-medium text-xs">
+        <span class="text-lg">🏢</span>
+        <span>Mi Empresa</span>
+      </button>
+    </div>
+  </nav>
+
+  <script>
+    // =========================================================================
+    // CONEXIÓN OFICIAL A TU SUPABASE
+    // =========================================================================
+    const SUPABASE_URL = "https://ggjhiwffoiftgfpgmmeu.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_Z4Ltm0PaOUmmoOdYyd4Nkw_DfCxG9ax";
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    let perfilActual = null;
+    let todosLosProcesos = [];
+
+    // Formateador de moneda peruana
+    const formatoSoles = (monto) => {
+      if (monto === null || monto === undefined) return "Reservado";
+      return "S/ " + Number(monto).toLocaleString("es-PE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    };
+
+    // Semáforo de urgencia según horas restantes
+    function calcularSemaforo(fechaLimiteISO) {
+      if (!fechaLimiteISO) return { color: "bg-emerald-100 text-emerald-800 border-emerald-300", texto: "En consulta" };
+      const ahora = new Date();
+      const limite = new Date(fechaLimiteISO);
+      const horasRestantes = (limite - ahora) / (1000 * 60 * 60);
+
+      if (horasRestantes <= 0) {
+        return { color: "bg-slate-200 text-slate-600 border-slate-300", texto: "Plazo cerrado" };
+      } else if (horasRestantes <= 24) {
+        return { color: "bg-red-100 text-red-800 border-red-300 animate-pulse", texto: `🔴 Vence en ${Math.ceil(horasRestantes)}h` };
+      } else if (horasRestantes <= 72) {
+        return { color: "bg-amber-100 text-amber-800 border-amber-300", texto: `🟡 Quedan ${Math.ceil(horasRestantes / 24)} días` };
+      } else {
+        return { color: "bg-emerald-100 text-emerald-800 border-emerald-300", texto: `🟢 Quedan ${Math.ceil(horasRestantes / 24)} días` };
+      }
+    }
+
+    // Etiqueta del origen del monto (Truco Técnico PAC / 8 UIT)
+    function etiquetaOrigenMonto(origen) {
+      if (origen === "ESTIMADO_PAC") return "Valor Estimado PAC";
+      if (origen === "TOPE_8_UIT") return "Ref. ≤ 8 UIT";
+      return "Cuantía Oficial";
+    }
+
+    // Renderizar tarjeta de proceso
+    function crearTarjetaProceso(p, mostrarMatch = false) {
+      const semaforo = calcularSemaforo(p.fecha_limite_oferta);
+      const esMenor = p.fuente === "CONTRATO_MENOR";
+      const badgeFuente = esMenor
+        ? `<span class="bg-purple-100 text-purple-800 text-[10px] font-bold px-2 py-0.5 rounded-md">⚡ CONTRATO MENOR (≤8 UIT)</span>`
+        : `<span class="bg-blue-100 text-blue-800 text-[10px] font-bold px-2 py-0.5 rounded-md">🏛️ PROCEDIMIENTO SELECCIÓN</span>`;
+
+      const bloqueMatch = mostrarMatch && p.puntaje_compatibilidad
+        ? `<div class="flex items-center justify-between bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-1.5 mb-2">
+             <span class="text-xs font-extrabold text-emerald-800">🔥 ${p.puntaje_compatibilidad}% Compatible</span>
+             <span class="text-[11px] text-emerald-700 truncate max-w-[200px]">${p.motivo_match || "Calza con tu perfil"}</span>
+           </div>`
+        : "";
+
+      const urlDoc = p.url_documento || (esMenor ? "https://prod6.seace.gob.pe/buscador-publico" : "https://prod2.seace.gob.pe/seacebus-uiwd-pub/buscadorPublico/buscadorPublico.xhtml");
+      const msgWhatsapp = encodeURIComponent(`*Alerta Radar SEACE*\n📌 *Proceso:* ${p.nomenclatura}\n🏢 *Entidad:* ${p.entidad}\n📝 *Objeto:* ${p.descripcion}\n💰 *Monto Ref:* ${formatoSoles(p.monto_referencial)} (${etiquetaOrigenMonto(p.origen_monto)})\n🔗 *Enlace:* ${urlDoc}`);
+
+      return `
+        <article class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 space-y-2.5">
+          ${bloqueMatch}
+          <div class="flex items-center justify-between gap-1 flex-wrap">
+            ${badgeFuente}
+            <span class="text-[11px] font-semibold px-2 py-0.5 rounded-md border ${semaforo.color}">${semaforo.texto}</span>
+          </div>
+
+          <div>
+            <p class="text-[11px] font-bold text-indigo-600">${p.nomenclatura}</p>
+            <h3 class="text-xs font-bold text-slate-900 mt-0.5">${p.entidad}</h3>
+            <p class="text-xs text-slate-600 mt-1 leading-relaxed">${p.descripcion}</p>
+          </div>
+
+          <div class="bg-slate-50 rounded-xl p-2.5 grid grid-cols-3 gap-2 text-center border border-slate-100">
+            <div>
+              <span class="block text-[10px] text-slate-400">Monto (${etiquetaOrigenMonto(p.origen_monto)})</span>
+              <span class="text-xs font-extrabold text-slate-800">${formatoSoles(p.monto_referencial)}</span>
+            </div>
+            <div>
+              <span class="block text-[10px] text-slate-400">Objeto</span>
+              <span class="text-xs font-bold text-slate-700">${p.objeto_contratacion}</span>
+            </div>
+            <div>
+              <span class="block text-[10px] text-slate-400">Ubicación</span>
+              <span class="text-xs font-bold text-slate-700">${p.departamento}</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 pt-1">
+            <a href="${urlDoc}" target="_blank" rel="noopener" class="bg-slate-900 hover:bg-slate-800 text-white text-center text-xs font-semibold py-2 rounded-xl transition">
+              📄 Ver TDR / Bases
+            </a>
+            <a href="https://wa.me/?text=${msgWhatsapp}" target="_blank" rel="noopener" class="bg-emerald-600 hover:bg-emerald-700 text-white text-center text-xs font-semibold py-2 rounded-xl transition">
+              📲 Enviar a WhatsApp
+            </a>
+          </div>
+        </article>
+      `;
+    }
+
+    // Cargar datos desde Supabase
+    async function recargarDatos() {
+      const alerta = document.getElementById("alerta-sistema");
+      alerta.classList.add("hidden");
+
+      try {
+        // 1. Obtener todos los procesos vigentes
+        const { data: procData, error: procErr } = await sb
+          .from("procesos_seace")
+          .select("*")
+          .eq("estado", "VIGENTE")
+          .order("fecha_limite_oferta", { ascending: true });
+
+        if (procErr) throw procErr;
+        todosLosProcesos = procData || [];
+
+        // 2. Obtener el perfil de la empresa
+        const { data: perfData, error: perfErr } = await sb
+          .from("perfiles_empresa")
+          .select("*")
+          .order("fecha_registro", { ascending: true })
+          .limit(1);
+
+        if (perfErr) throw perfErr;
+
+        if (perfData && perfData.length > 0) {
+          perfilActual = perfData[0];
+          document.getElementById("header-empresa").innerText = `${perfilActual.razon_social} (RUC: ${perfilActual.ruc})`;
+          llenarFormularioPerfil(perfilActual);
+          await cargarOportunidadesPerfil(perfilActual.id);
+        } else {
+          document.getElementById("header-empresa").innerText = "Configura tu empresa en la pestaña Mi Empresa";
+        }
+
+        renderExplorar();
+      } catch (err) {
+        alerta.classList.remove("hidden");
+        alerta.innerHTML = `<strong>⚠️ Falta activar el permiso de lectura en Supabase:</strong> Ejecuta el bloque corto de <code>CREATE POLICY</code> en el SQL Editor de tu Supabase para permitir que la App lea las tablas. (${err.message})`;
+      }
+    }
+
+    // Llamar a la función RPC obtener_oportunidades_perfil en Supabase
+    async function cargarOportunidadesPerfil(empresaId) {
+      const contenedor = document.getElementById("lista-parati");
+      const { data: matchData, error } = await sb.rpc("obtener_oportunidades_perfil", {
+        p_empresa_id: empresaId
+      });
+
+      if (error) {
+        contenedor.innerHTML = `<div class="bg-amber-50 p-3 rounded-xl text-xs text-amber-800">Error al calcular compatibilidad: ${error.message}</div>`;
+        return;
+      }
+
+      // Cruzar con todosLosProcesos para conservar url_documento
+      const mapaUrl = {};
+      todosLosProcesos.forEach(pr => { mapaUrl[pr.id] = pr.url_documento; });
+
+      const lista = (matchData || []).map(item => ({
+        ...item,
+        url_documento: mapaUrl[item.proceso_id]
+      }));
+
+      document.getElementById("contador-match").innerText = lista.length;
+
+      if (lista.length === 0) {
+        contenedor.innerHTML = `
+          <div class="bg-white rounded-2xl p-6 text-center border border-slate-200 space-y-2">
+            <p class="text-sm font-bold text-slate-700">No hay procesos con +50% de compatibilidad hoy</p>
+            <p class="text-xs text-slate-500">Amplía tus palabras clave o departamentos en la pestaña "Mi Empresa", o revisa todas las convocatorias en "Explorar SEACE".</p>
+          </div>`;
+        return;
+      }
+
+      contenedor.innerHTML = lista.map(p => crearTarjetaProceso(p, true)).join("");
+    }
+
+    // Filtrar en la pestaña Explorar SEACE
+    function renderExplorar() {
+      const texto = (document.getElementById("filtro-texto").value || "").toLowerCase().trim();
+      const fuente = document.getElementById("filtro-fuente").value;
+      const objeto = document.getElementById("filtro-objeto").value;
+      const depto = document.getElementById("filtro-depto").value;
+      const montoMax = Number(document.getElementById("filtro-monto").value);
+
+      const filtrados = todosLosProcesos.filter(p => {
+        if (fuente !== "TODOS" && p.fuente !== fuente) return false;
+        if (objeto !== "TODOS" && p.objeto_contratacion !== objeto) return false;
+        if (depto !== "TODOS" && p.departamento !== depto) return false;
+        if (montoMax < 1000000 && Number(p.monto_referencial || 0) > montoMax) return false;
+        if (texto) {
+          const buscable = `${p.nomenclatura} ${p.entidad} ${p.descripcion}`.toLowerCase();
+          if (!buscable.includes(texto)) return false;
+        }
+        return true;
+      });
+
+      const contenedor = document.getElementById("lista-explorar");
+      if (filtrados.length === 0) {
+        contenedor.innerHTML = `<div class="bg-white rounded-2xl p-6 text-center text-xs text-slate-400 border">No se encontraron procesos con esos filtros.</div>`;
+        return;
+      }
+      contenedor.innerHTML = filtrados.map(p => crearTarjetaProceso(p, false)).join("");
+    }
+
+    function actualizarLabelMonto() {
+      const val = Number(document.getElementById("filtro-monto").value);
+      document.getElementById("label-monto-max").innerText = val >= 1000000 ? "Sin límite" : formatoSoles(val);
+    }
+
+    // Llenar datos en la pestaña Mi Empresa
+    function llenarFormularioPerfil(p) {
+      document.getElementById("perf-ruc").value = p.ruc || "";
+      document.getElementById("perf-razon").value = p.razon_social || "";
+      document.getElementById("perf-exp").value = p.experiencia_acumulada_soles || 0;
+      document.getElementById("perf-min").value = p.monto_minimo_interes || 0;
+      document.getElementById("perf-max").value = p.monto_maximo_interes || 500000;
+      document.getElementById("perf-kw").value = (p.palabras_clave || []).join(", ");
+      document.getElementById("perf-ex").value = (p.palabras_excluidas || []).join(", ");
+      document.getElementById("perf-deptos").value = (p.departamentos_interes || []).join(", ");
+      document.getElementById("perf-cm").checked = p.incluir_contratos_menores !== false;
+      document.getElementById("perf-ps").checked = p.incluir_procedimientos_seleccion !== false;
+
+      const permitidos = p.objetos_permitidos || [];
+      document.querySelectorAll(".chk-objeto").forEach(chk => {
+        chk.checked = permitidos.includes(chk.value);
+      });
+    }
+
+    // Guardar cambios del perfil en Supabase y recalcular
+    async function guardarPerfil() {
+      const btn = document.getElementById("btn-guardar");
+      btn.innerText = "Guardando...";
+
+      const objetos = Array.from(document.querySelectorAll(".chk-objeto"))
+        .filter(c => c.checked)
+        .map(c => c.value);
+
+      const kw = document.getElementById("perf-kw").value
+        .split(",")
+        .map(s => s.trim())
+        .filter(Boolean);
+
+      const ex = document.getElementById("perf-ex").value
+        .split(",")
+        .map(s => s.trim())
+        .filter(Boolean);
+
+      const deptos = document.getElementById("perf-deptos").value
+        .split(",")
+        .map(s => s.trim().toUpperCase())
+        .filter(Boolean);
+
+      const payload = {
+        ruc: document.getElementById("perf-ruc").value.trim(),
+        razon_social: document.getElementById("perf-razon").value.trim(),
+        objetos_permitidos: objetos.length ? objetos : ["BIENES", "SERVICIOS"],
+        experiencia_acumulada_soles: Number(document.getElementById("perf-exp").value || 0),
+        monto_minimo_interes: Number(document.getElementById("perf-min").value || 0),
+        monto_maximo_interes: Number(document.getElementById("perf-max").value || 500000),
+        palabras_clave: kw,
+        palabras_excluidas: ex,
+        departamentos_interes: deptos.length ? deptos : ["LIMA"],
+        incluir_contratos_menores: document.getElementById("perf-cm").checked,
+        incluir_procedimientos_seleccion: document.getElementById("perf-ps").checked
+      };
+
+      const { error } = await sb
+        .from("perfiles_empresa")
+        .upsert(payload, { onConflict: "ruc" });
+
+      if (error) {
+        alert("Error al guardar perfil: " + error.message);
+        btn.innerText = "💾 Guardar Perfil y Recalcular Match";
+        return;
+      }
+
+      btn.innerText = "✅ ¡Perfil Actualizado!";
+      await recargarDatos();
+      setTimeout(() => {
+        btn.innerText = "💾 Guardar Perfil y Recalcular Match";
+        cambiarTab("parati");
+      }, 600);
+    }
+
+    // Cambiar entre las 3 pestañas inferiores
+    function cambiarTab(tab) {
+      ["parati", "explorar", "perfil"].forEach(t => {
+        document.getElementById(`tab-${t}`).classList.toggle("hidden", t !== tab);
+        const navBtn = document.getElementById(`nav-${t}`);
+        if (t === tab) {
+          navBtn.className = "py-2.5 flex flex-col items-center text-indigo-600 font-bold text-xs";
+        } else {
+          navBtn.className = "py-2.5 flex flex-col items-center text-slate-400 font-medium text-xs";
+        }
+      });
+    }
+
+    // Iniciar aplicación al abrir
+    recargarDatos();
+  </script>
+</body>
+</html>
