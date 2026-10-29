@@ -6,14 +6,14 @@
   <meta name="theme-color" content="#f59e0b" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <title>Radar SEACE — Inteligencia en Contrataciones</title>
+  <title>Radar SEACE - Inteligencia en Contrataciones</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- Librería SheetJS para importar reportes Excel/CSV reales del SEACE directo desde la App -->
+  <!-- Librería SheetJS para importar reportes Excel/CSV reales del SEACE -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #fcfaf5; }
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #fcfaf2; }
     .card-warm-yellow { background-color: #fffdf4; border: 2px solid #fcd34d; }
     .card-warm-green  { background-color: #f2fdf7; border: 2px solid #86efac; }
     .card-warm-blue   { background-color: #f0f9ff; border: 2px solid #7dd3fc; }
@@ -23,62 +23,62 @@
 <body class="text-slate-900 pb-24 select-none">
 
   <!-- BOTÓN FLOTANTE LATERAL "> MENÚ" -->
-  <button onclick="toggleMenu(true)" class="fixed left-0 top-1/3 z-40 bg-slate-900 text-amber-400 border-y-2 border-r-2 border-amber-400 rounded-r-2xl px-2.5 py-3 shadow-lg flex flex-col items-center gap-0.5 active:scale-95 transition">
-    <span class="text-lg font-extrabold leading-none">›</span>
-    <span class="text-[10px] font-extrabold tracking-wider uppercase">MENÚ</span>
+  <button onclick="toggleMenu(true)" class="fixed left-0 top-1/3 z-40 bg-slate-900 text-amber-400 border-2 border-l-0 border-amber-400 rounded-r-2xl py-3 px-2 shadow-lg flex flex-col items-center gap-1 active:scale-95 transition">
+    <span class="text-lg font-extrabold leading-none">&gt;</span>
+    <span class="text-[10px] font-extrabold tracking-wider uppercase" style="writing-mode: vertical-rl;">MENÚ</span>
   </button>
 
   <!-- MENÚ LATERAL DESLIZABLE (DRAWER COMPLETO) -->
-  <div id="drawer-overlay" onclick="toggleMenu(false)" class="fixed inset-0 bg-black/50 z-50 hidden backdrop-blur-xs"></div>
-  <aside id="drawer-menu" class="fixed top-0 left-0 bottom-0 w-72 bg-white z-50 shadow-2xl transform -translate-x-full transition-transform duration-300 flex flex-col justify-between">
+  <div id="drawer-overlay" onclick="toggleMenu(false)" class="fixed inset-0 bg-slate-950/50 z-40 hidden backdrop-blur-xs"></div>
+  <aside id="drawer-menu" class="fixed top-0 left-0 bottom-0 w-72 bg-white z-50 shadow-2xl transform -translate-x-full transition-transform duration-300 flex flex-col justify-between border-r-2 border-amber-300">
     <div>
       <div class="bg-gradient-to-r from-amber-400 to-yellow-500 p-5 border-b border-amber-500">
         <div class="flex justify-between items-center">
-          <span class="bg-slate-900 text-amber-400 text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase">Radar SEACE Pro</span>
-          <button onclick="toggleMenu(false)" class="bg-slate-900/10 hover:bg-slate-900/20 text-slate-900 font-bold w-8 h-8 rounded-full">✕</button>
+          <span class="bg-slate-900 text-amber-400 text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase">Radar SEACE</span>
+          <button onclick="toggleMenu(false)" class="bg-slate-900/10 hover:bg-slate-900/20 text-slate-900 font-extrabold w-8 h-8 rounded-full">✕</button>
         </div>
         <h2 class="text-xl font-extrabold text-slate-900 mt-3">Menú Principal</h2>
-        <p id="drawer-empresa-actual" class="text-xs font-semibold text-slate-800 mt-0.5 truncate">Cargando perfil...</p>
+        <p id="drawer-empresa-actual" class="text-xs font-semibold text-slate-800 truncate mt-0.5">Cargando...</p>
       </div>
 
-      <nav class="p-3 space-y-1.5">
-        <button onclick="irAVista('inicio')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold text-sm hover:bg-amber-50 text-slate-800">
-          <span class="bg-amber-400 text-slate-900 w-8 h-8 rounded-lg flex items-center justify-center font-extrabold">🏠</span>
+      <nav class="p-3 space-y-1.5 text-xs font-extrabold text-slate-800">
+        <button onclick="irAVista('inicio')" class="w-full flex items-center gap-3 p-3 rounded-2xl hover:bg-amber-50 text-left transition">
+          <span class="bg-amber-400 text-slate-900 w-8 h-8 rounded-lg flex items-center justify-center text-base">🏠</span>
           <div>
             <p>Inicio</p>
-            <p class="text-[11px] font-normal text-slate-500">Panel de las 4 opciones principales</p>
+            <p class="text-[11px] font-normal text-slate-500">Panel de las 4 opciones</p>
           </div>
         </button>
 
-        <button onclick="irAVista('parati')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold text-sm hover:bg-amber-50 text-slate-800">
-          <span class="bg-orange-400 text-white w-8 h-8 rounded-lg flex items-center justify-center font-extrabold">🎯</span>
+        <button onclick="irAVista('parati')" class="w-full flex items-center gap-3 p-3 rounded-2xl hover:bg-amber-50 text-left transition">
+          <span class="bg-orange-400 text-white w-8 h-8 rounded-lg flex items-center justify-center text-base">🎯</span>
           <div>
             <p>Oportunidades Para Mí</p>
-            <p class="text-[11px] font-normal text-slate-500">Procesos según el perfil de tu empresa</p>
+            <p class="text-[11px] font-normal text-slate-500">Procesos según el perfil activo</p>
           </div>
         </button>
 
-        <button onclick="irAVista('explorar')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold text-sm hover:bg-amber-50 text-slate-800">
-          <span class="bg-emerald-500 text-white w-8 h-8 rounded-lg flex items-center justify-center font-extrabold">🔍</span>
+        <button onclick="irAVista('explorar')" class="w-full flex items-center gap-3 p-3 rounded-2xl hover:bg-amber-50 text-left transition">
+          <span class="bg-emerald-500 text-white w-8 h-8 rounded-lg flex items-center justify-center text-base">🔎</span>
           <div>
             <p>Explorar y Filtrar SEACE</p>
             <p class="text-[11px] font-normal text-slate-500">Buscador multicriterio completo</p>
           </div>
         </button>
 
-        <button onclick="irAVista('perfiles')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold text-sm hover:bg-amber-50 text-slate-800">
-          <span class="bg-sky-500 text-white w-8 h-8 rounded-lg flex items-center justify-center font-extrabold">🏢</span>
+        <button onclick="irAVista('perfiles')" class="w-full flex items-center gap-3 p-3 rounded-2xl hover:bg-amber-50 text-left transition">
+          <span class="bg-sky-500 text-white w-8 h-8 rounded-lg flex items-center justify-center text-base">🏢</span>
           <div>
             <p>Mis Empresas / Perfiles</p>
-            <p class="text-[11px] font-normal text-slate-500">Autocompletar con SUNAT o cambiar</p>
+            <p class="text-[11px] font-normal text-slate-500">Autocompletar con SUNAT</p>
           </div>
         </button>
 
-        <button onclick="irAVista('sincronizar')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left font-bold text-sm hover:bg-amber-50 text-slate-800">
-          <span class="bg-purple-600 text-white w-8 h-8 rounded-lg flex items-center justify-center font-extrabold">⚡</span>
+        <button onclick="irAVista('sincronizar')" class="w-full flex items-center gap-3 p-3 rounded-2xl hover:bg-amber-50 text-left transition">
+          <span class="bg-purple-600 text-white w-8 h-8 rounded-lg flex items-center justify-center text-base">📥</span>
           <div>
             <p>Datos Reales SEACE</p>
-            <p class="text-[11px] font-normal text-slate-500">Importar Excel/CSV SEACE o limpiar</p>
+            <p class="text-[11px] font-normal text-slate-500">Importar Excel/CSV o limpiar</p>
           </div>
         </button>
       </nav>
@@ -91,39 +91,41 @@
   </aside>
 
   <!-- ENCABEZADO CÁLIDO AMARILLO / NARANJA -->
-  <header class="bg-gradient-to-b from-amber-400 to-amber-500 text-slate-950 sticky top-0 z-30 shadow-md px-4 py-3.5 border-b-2 border-amber-600/20">
+  <header class="bg-gradient-to-b from-amber-400 to-amber-500 text-slate-950 sticky top-0 z-30 shadow-md px-4 py-3 border-b-2 border-amber-600/30">
     <div class="max-w-md mx-auto">
       <div class="flex items-start justify-between gap-2">
         <div class="pl-2">
-          <h1 id="titulo-cabecera" class="font-extrabold text-2xl tracking-tight text-slate-900">Inicio</h1>
-          <p class="text-xs font-bold text-slate-900/80 mt-0.5 leading-snug">
-            <span id="fecha-cabecera">Octubre 2026</span> • Empresa: 
-            <span id="nombre-empresa-cabecera" class="underline decoration-slate-900/50 cursor-pointer" onclick="irAVista('perfiles')">Seleccionar</span>
+          <h1 id="titulo-cabecera" class="font-extrabold text-2xl tracking-tight leading-none">Inicio</h1>
+          <p class="text-xs font-bold text-slate-900/80 mt-1 leading-snug">
+            <span id="fecha-cabecera">Octubre 2026</span> • Empresa:
+            <span id="nombre-empresa-cabecera" class="underline decoration-slate-900/50">Cargando...</span>
             • Tope: <span id="tope-empresa-cabecera">S/ 0.00</span>
           </p>
         </div>
 
         <!-- 3 BOTONES SUPERIORES REDONDEADOS -->
-        <div class="flex items-center gap-2 shrink-0">
-          <button onclick="irAVista('inicio')" title="Inicio" class="w-11 h-11 rounded-2xl bg-slate-900 border-2 border-white shadow-md flex items-center justify-center text-amber-400 active:scale-95 transition">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10.5L12 3l9 7.5V21a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1v-10.5z"/></svg>
+        <div class="flex items-center gap-1.5 shrink-0">
+          <button onclick="irAVista('inicio')" title="Inicio" class="w-10 h-10 rounded-xl bg-slate-900 text-white border-2 border-white shadow flex items-center justify-center active:scale-95">
+            🏠
           </button>
-          <button onclick="irAVista('explorar')" title="Filtrar Procesos" class="w-11 h-11 rounded-2xl bg-slate-900 border-2 border-white shadow-md flex items-center justify-center text-amber-400 active:scale-95 transition">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"/></svg>
+          <button onclick="irAVista('explorar')" title="Filtrar Procesos" class="w-10 h-10 rounded-xl bg-slate-900 text-white border-2 border-white shadow flex items-center justify-center active:scale-95">
+            🔎
           </button>
-          <button onclick="compartirResumenWhatsapp()" title="WhatsApp" class="w-11 h-11 rounded-2xl bg-emerald-500 border-2 border-white shadow-md flex items-center justify-center text-white active:scale-95 transition">
-            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2zm5.82 14.01c-.24.68-1.41 1.3-1.95 1.38-.5.08-1.13.11-1.83-.11-.42-.13-.97-.31-1.67-.61-2.95-1.27-4.88-4.25-5.03-4.45-.15-.2-1.2-1.6-1.2-3.05 0-1.45.76-2.16 1.03-2.46.27-.3.59-.37.79-.37.2 0 .4 0 .57.01.18.01.43-.07.67.51.24.59.82 2.01.89 2.16.07.15.12.32.02.52-.1.2-.15.32-.3.5-.15.17-.31.39-.44.52-.15.15-.3.31-.13.61.17.3.76 1.25 1.63 2.03 1.12 1 2.06 1.31 2.36 1.46.3.15.47.12.65-.08.17-.2.74-.86.94-1.16.2-.3.4-.25.67-.15.27.1 1.73.82 2.03.97.3.15.5.22.57.35.08.12.08.72-.16 1.4z"/></svg>
+          <button onclick="compartirResumenWhatsapp()" title="WhatsApp" class="w-10 h-10 rounded-xl bg-emerald-600 text-white border-2 border-white shadow flex items-center justify-center active:scale-95">
+            📲
           </button>
         </div>
       </div>
 
       <!-- SELECTOR RÁPIDO DE EMPRESA / USUARIO ACTIVO -->
-      <div class="mt-2.5 bg-amber-300/70 border border-amber-600/30 rounded-xl px-3 py-1.5 flex items-center justify-between gap-2">
-        <span class="text-[11px] font-extrabold text-slate-900 uppercase shrink-0">Perfil Activo:</span>
-        <select id="selector-empresa-global" onchange="cambiarEmpresaActiva(this.value)" class="w-full bg-transparent text-xs font-extrabold text-slate-950 focus:outline-none truncate">
+      <div class="mt-2.5 bg-amber-300/70 border border-amber-600/30 rounded-xl p-1.5 flex items-center justify-between gap-2">
+        <span class="text-[11px] font-extrabold text-slate-900 uppercase shrink-0 pl-1.5">Perfil Activo:</span>
+        <select id="selector-empresa-global" onchange="cambiarEmpresaActiva(this.value)" class="flex-1 bg-white text-slate-900 font-bold text-xs rounded-lg px-2 py-1.5 border border-amber-500 focus:outline-none">
           <option value="">Cargando empresas...</option>
         </select>
-        <button onclick="irANuevoPerfilDirecto()" class="bg-slate-900 text-amber-400 text-[10px] font-bold px-2.5 py-1 rounded-lg shrink-0">+ Nueva</button>
+        <button onclick="irANuevoPerfilDirecto()" class="bg-slate-900 text-amber-400 text-[11px] font-extrabold px-2.5 py-1.5 rounded-lg shrink-0">
+          + RUC
+        </button>
       </div>
     </div>
   </header>
@@ -132,7 +134,7 @@
   <main class="max-w-md mx-auto p-4 pl-6 space-y-5">
 
     <!-- ALERTA SISTEMA -->
-    <div id="alerta-sistema" class="hidden bg-red-50 border-2 border-red-300 text-red-900 text-xs p-3 rounded-2xl"></div>
+    <div id="alerta-sistema" class="hidden bg-red-50 border-2 border-red-300 text-red-900 rounded-2xl p-3 text-xs"></div>
 
     <!-- =================================================================== -->
     <!-- VISTA 1: INICIO (4 OPCIONES PRINCIPALES CON TARJETAS CÁLIDAS)       -->
@@ -144,41 +146,33 @@
       </div>
 
       <!-- TARJETA 1: OPORTUNIDADES PARA MÍ -->
-      <div onclick="irAVista('parati')" class="card-warm-yellow rounded-3xl p-6 text-center shadow-sm cursor-pointer active:scale-[0.99] transition relative">
-        <span id="badge-inicio-match" class="absolute top-4 right-4 bg-amber-500 text-slate-950 text-xs font-extrabold px-3 py-1 rounded-full shadow-xs">0 compatibles</span>
-        <div class="w-20 h-20 mx-auto rounded-3xl bg-amber-400 flex items-center justify-center shadow-inner mb-4">
-          <svg class="w-10 h-10 text-amber-950" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
-        </div>
+      <div onclick="irAVista('parati')" class="card-warm-yellow rounded-3xl p-5 shadow-sm text-center relative cursor-pointer active:scale-98 transition">
+        <span id="badge-inicio-match" class="absolute top-4 right-4 bg-amber-500 text-slate-950 text-[11px] font-extrabold px-2.5 py-0.5 rounded-full">0 compat.</span>
+        <div class="w-16 h-16 mx-auto rounded-2xl bg-amber-400 flex items-center justify-center text-3xl shadow-xs mb-3">🎯</div>
         <h3 class="text-xl font-extrabold text-slate-900">Oportunidades Para Mí</h3>
-        <p class="text-sm text-slate-600 mt-1">Ver procesos vigentes que calzan con el perfil de mi empresa</p>
+        <p class="text-sm text-slate-600 mt-1">Ver procesos vigentes que calzan con tu RNP, experiencia y rubros</p>
       </div>
 
       <!-- TARJETA 2: EXPLORAR Y FILTRAR SEACE -->
-      <div onclick="irAVista('explorar')" class="card-warm-green rounded-3xl p-6 text-center shadow-sm cursor-pointer active:scale-[0.99] transition relative">
-        <span id="badge-inicio-total" class="absolute top-4 right-4 bg-emerald-600 text-white text-xs font-extrabold px-3 py-1 rounded-full shadow-xs">0 vigentes</span>
-        <div class="w-20 h-20 mx-auto rounded-3xl bg-emerald-500 flex items-center justify-center shadow-inner mb-4">
-          <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
-        </div>
+      <div onclick="irAVista('explorar')" class="card-warm-green rounded-3xl p-5 shadow-sm text-center relative cursor-pointer active:scale-98 transition">
+        <span id="badge-inicio-total" class="absolute top-4 right-4 bg-emerald-600 text-white text-[11px] font-extrabold px-2.5 py-0.5 rounded-full">0 vigentes</span>
+        <div class="w-16 h-16 mx-auto rounded-2xl bg-emerald-500 flex items-center justify-center text-3xl text-white shadow-xs mb-3">🔎</div>
         <h3 class="text-xl font-extrabold text-slate-900">Buscar y Filtrar en SEACE</h3>
-        <p class="text-sm text-slate-600 mt-1">Filtrar por montos, departamentos, rubros y contratos menores</p>
+        <p class="text-sm text-slate-600 mt-1">Filtrar por montos, departamentos, Contratos Menores o Procedimientos</p>
       </div>
 
       <!-- TARJETA 3: MIS EMPRESAS / PERFILES CON SUNAT -->
-      <div onclick="irAVista('perfiles')" class="card-warm-blue rounded-3xl p-6 text-center shadow-sm cursor-pointer active:scale-[0.99] transition">
-        <div class="w-20 h-20 mx-auto rounded-3xl bg-sky-500 flex items-center justify-center shadow-inner mb-4">
-          <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-        </div>
+      <div onclick="irAVista('perfiles')" class="card-warm-blue rounded-3xl p-5 shadow-sm text-center cursor-pointer active:scale-98 transition">
+        <div class="w-16 h-16 mx-auto rounded-2xl bg-sky-500 flex items-center justify-center text-3xl text-white shadow-xs mb-3">🏢</div>
         <h3 class="text-xl font-extrabold text-slate-900">Perfiles de Empresas (SUNAT)</h3>
-        <p class="text-sm text-slate-600 mt-1">Registrar uno o varios RUC con carga automática desde SUNAT</p>
+        <p class="text-sm text-slate-600 mt-1">Registrar uno o varios RUC con autocompletado directo de SUNAT</p>
       </div>
 
       <!-- TARJETA 4: DATOS REALES Y SINCRONIZACIÓN -->
-      <div onclick="irAVista('sincronizar')" class="card-warm-orange rounded-3xl p-6 text-center shadow-sm cursor-pointer active:scale-[0.99] transition">
-        <div class="w-20 h-20 mx-auto rounded-3xl bg-orange-500 flex items-center justify-center shadow-inner mb-4">
-          <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
-        </div>
+      <div onclick="irAVista('sincronizar')" class="card-warm-orange rounded-3xl p-5 shadow-sm text-center cursor-pointer active:scale-98 transition">
+        <div class="w-16 h-16 mx-auto rounded-2xl bg-orange-500 flex items-center justify-center text-3xl text-white shadow-xs mb-3">📥</div>
         <h3 class="text-xl font-extrabold text-slate-900">Cargar Datos del SEACE</h3>
-        <p class="text-sm text-slate-600 mt-1">Subir reporte Excel/CSV del SEACE o limpiar datos de prueba</p>
+        <p class="text-sm text-slate-600 mt-1">Subir reporte Excel/CSV del SEACE o administrar procesos</p>
       </div>
     </section>
 
@@ -186,14 +180,14 @@
     <!-- VISTA 2: OPORTUNIDADES PARA MÍ (MATCH SEGÚN PERFIL ACTIVO)          -->
     <!-- =================================================================== -->
     <section id="vista-parati" class="hidden space-y-4">
-      <div class="bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 rounded-3xl p-4 shadow-md border-2 border-amber-300">
+      <div class="bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 rounded-3xl p-4 shadow">
         <div class="flex justify-between items-start gap-2">
           <div>
-            <span class="text-[10px] font-extrabold uppercase tracking-wider bg-slate-900 text-amber-400 px-2.5 py-0.5 rounded-full">Radar Personalizado</span>
-            <h2 id="titulo-parati-empresa" class="text-lg font-extrabold mt-1">Oportunidades Para Mí</h2>
-            <p id="resumen-parati-criterios" class="text-xs font-semibold text-slate-900/80 mt-0.5">Cruzando RNP, palabras clave y experiencia...</p>
+            <span class="text-[10px] font-extrabold uppercase tracking-wider bg-white/40 px-2.5 py-0.5 rounded-full">Motor Inteligente</span>
+            <h2 id="titulo-parati-empresa" class="text-lg font-extrabold mt-1">Para: Mi Empresa</h2>
+            <p id="resumen-parati-criterios" class="text-xs font-semibold text-slate-900/80 mt-0.5">Cargando criterios...</p>
           </div>
-          <span id="contador-match" class="bg-slate-900 text-amber-400 font-extrabold text-sm px-3 py-1.5 rounded-2xl shrink-0">0</span>
+          <span id="contador-match" class="bg-slate-900 text-amber-400 font-extrabold text-sm px-3 py-1.5 rounded-2xl">0</span>
         </div>
       </div>
 
@@ -206,20 +200,20 @@
     <section id="vista-explorar" class="hidden space-y-4">
       <div class="card-warm-yellow rounded-3xl p-4 shadow-sm space-y-3">
         <div class="flex items-center justify-between">
-          <h2 class="font-extrabold text-base text-slate-900">🔍 Filtros de Búsqueda SEACE</h2>
+          <h2 class="font-extrabold text-base text-slate-900">🔎 Filtros de Búsqueda SEACE</h2>
           <button onclick="limpiarFiltros()" class="text-xs font-bold text-orange-700 underline">Limpiar filtros</button>
         </div>
 
         <!-- Palabra clave -->
         <div>
-          <label class="text-[11px] font-extrabold text-slate-700 uppercase">¿Qué rubro, bien, servicio o entidad buscas?</label>
-          <input id="filtro-texto" type="text" oninput="renderExplorar()" placeholder="Ej: consultoría, inventario, aire acondicionado, SUNARP..." class="w-full mt-1 text-sm bg-white border-2 border-amber-300 rounded-xl px-3 py-2.5 font-medium focus:outline-none focus:border-amber-500" />
+          <label class="text-[11px] font-extrabold text-slate-700 uppercase">¿Qué rubro o palabra buscas?</label>
+          <input id="filtro-texto" type="text" oninput="renderExplorar()" placeholder="Ej: inventario, climatización, mobiliario, consultoría..." class="w-full text-xs bg-white border-2 border-amber-300 rounded-xl px-3 py-2.5 mt-1 font-semibold focus:outline-none focus:border-amber-500" />
         </div>
 
         <div class="grid grid-cols-2 gap-2.5">
           <div>
             <label class="text-[11px] font-extrabold text-slate-700 uppercase">Modalidad</label>
-            <select id="filtro-fuente" onchange="renderExplorar()" class="w-full mt-1 text-xs font-bold bg-white border-2 border-amber-300 rounded-xl p-2.5">
+            <select id="filtro-fuente" onchange="renderExplorar()" class="w-full text-xs bg-white border-2 border-amber-300 rounded-xl p-2 mt-1 font-bold">
               <option value="TODOS">Todas las modalidades</option>
               <option value="CONTRATO_MENOR">Contratos Menores (≤ 8 UIT)</option>
               <option value="PROCEDIMIENTO_SELECCION">Procedimientos de Selección</option>
@@ -227,7 +221,7 @@
           </div>
           <div>
             <label class="text-[11px] font-extrabold text-slate-700 uppercase">Objeto RNP</label>
-            <select id="filtro-objeto" onchange="renderExplorar()" class="w-full mt-1 text-xs font-bold bg-white border-2 border-amber-300 rounded-xl p-2.5">
+            <select id="filtro-objeto" onchange="renderExplorar()" class="w-full text-xs bg-white border-2 border-amber-300 rounded-xl p-2 mt-1 font-bold">
               <option value="TODOS">Todos los objetos</option>
               <option value="BIENES">Bienes</option>
               <option value="SERVICIOS">Servicios</option>
@@ -240,7 +234,7 @@
         <div class="grid grid-cols-2 gap-2.5">
           <div>
             <label class="text-[11px] font-extrabold text-slate-700 uppercase">Departamento</label>
-            <select id="filtro-depto" onchange="renderExplorar()" class="w-full mt-1 text-xs font-bold bg-white border-2 border-amber-300 rounded-xl p-2.5">
+            <select id="filtro-depto" onchange="renderExplorar()" class="w-full text-xs bg-white border-2 border-amber-300 rounded-xl p-2 mt-1 font-bold">
               <option value="TODOS">Todo el Perú</option>
               <option value="AMAZONAS">AMAZONAS</option>
               <option value="ANCASH">ANCASH</option>
@@ -270,8 +264,8 @@
             </select>
           </div>
           <div>
-            <label class="text-[11px] font-extrabold text-slate-700 uppercase">Urgencia / Plazo</label>
-            <select id="filtro-urgencia" onchange="renderExplorar()" class="w-full mt-1 text-xs font-bold bg-white border-2 border-amber-300 rounded-xl p-2.5">
+            <label class="text-[11px] font-extrabold text-slate-700 uppercase">Plazo de Vencimiento</label>
+            <select id="filtro-urgencia" onchange="renderExplorar()" class="w-full text-xs bg-white border-2 border-amber-300 rounded-xl p-2 mt-1 font-bold">
               <option value="TODOS">Cualquier plazo</option>
               <option value="24H">Vence en menos de 24h</option>
               <option value="72H">Vence en 3 días o menos</option>
@@ -283,17 +277,17 @@
         <div class="grid grid-cols-2 gap-2.5 pt-1">
           <div>
             <label class="text-[11px] font-extrabold text-slate-700 uppercase">Monto Mínimo (S/)</label>
-            <input id="filtro-monto-min" type="number" oninput="renderExplorar()" placeholder="0" class="w-full mt-1 text-xs font-bold bg-white border-2 border-amber-300 rounded-xl p-2" />
+            <input id="filtro-monto-min" type="number" oninput="renderExplorar()" placeholder="0" class="w-full text-xs bg-white border-2 border-amber-300 rounded-xl p-2 mt-1 font-bold" />
           </div>
           <div>
             <label class="text-[11px] font-extrabold text-slate-700 uppercase">Monto Máximo (S/)</label>
-            <input id="filtro-monto-max" type="number" oninput="renderExplorar()" placeholder="Sin límite" class="w-full mt-1 text-xs font-bold bg-white border-2 border-amber-300 rounded-xl p-2" />
+            <input id="filtro-monto-max" type="number" oninput="renderExplorar()" placeholder="Sin límite" class="w-full text-xs bg-white border-2 border-amber-300 rounded-xl p-2 mt-1 font-bold" />
           </div>
         </div>
 
-        <div class="bg-amber-100/80 rounded-xl px-3 py-2 flex justify-between items-center text-xs font-bold text-amber-950">
+        <div class="bg-amber-100/80 rounded-xl px-3 py-2 flex justify-between items-center text-xs font-extrabold text-slate-800">
           <span>Resultados encontrados:</span>
-          <span id="contador-explorar" class="bg-amber-500 text-slate-950 px-2.5 py-0.5 rounded-lg font-extrabold">0</span>
+          <span id="contador-explorar" class="bg-amber-500 text-slate-950 px-2.5 py-0.5 rounded-lg">0</span>
         </div>
       </div>
 
@@ -308,8 +302,8 @@
       <div class="card-warm-blue rounded-3xl p-4 space-y-3">
         <div class="flex items-center justify-between">
           <div>
-            <h2 class="font-extrabold text-base text-slate-900">🏢 Empresas / Usuarios Registrados</h2>
-            <p class="text-xs text-slate-600">Toca una empresa para activarla o registra una nueva</p>
+            <h2 class="font-extrabold text-base text-slate-900">🏢 Empresas Registradas</h2>
+            <p class="text-xs text-slate-600">Toca una empresa para activarla o edita sus datos abajo</p>
           </div>
           <button onclick="prepararNuevoPerfil()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-xs px-3 py-2 rounded-xl shadow-xs">
             + Nuevo Perfil
@@ -320,9 +314,9 @@
 
       <!-- Formulario Crear / Editar Empresa con Autocompletado SUNAT -->
       <div id="card-formulario-perfil" class="bg-white rounded-3xl p-5 shadow-sm border-2 border-amber-300 space-y-3.5">
-        <div class="flex justify-between items-center border-b border-slate-100 pb-2">
-          <h3 id="titulo-form-perfil" class="font-extrabold text-base text-slate-900">Editar Perfil de Empresa</h3>
-          <span id="badge-modo-perfil" class="bg-amber-100 text-amber-900 text-[10px] font-extrabold px-2.5 py-1 rounded-full">EDITANDO</span>
+        <div class="flex justify-between items-center border-b border-slate-100 pb-2.5">
+          <h3 id="titulo-form-perfil" class="font-extrabold text-base text-slate-900">Registrar Nueva Empresa</h3>
+          <span id="badge-modo-perfil" class="bg-amber-100 text-amber-900 text-[10px] font-extrabold px-2.5 py-1 rounded-full">NUEVO REGISTRO</span>
         </div>
 
         <!-- BLOQUE RUC CON AUTOCOMPLETADO AUTOMÁTICO SUNAT -->
@@ -330,15 +324,15 @@
           <div class="grid grid-cols-12 gap-2 items-end">
             <div class="col-span-5">
               <label class="text-[11px] font-extrabold text-slate-800">RUC (11 dígitos)</label>
-              <input id="perf-ruc" type="text" maxlength="11" oninput="verificarLongitudRuc(this.value)" placeholder="Ej: 20601234567" class="w-full text-xs font-extrabold bg-white border-2 border-amber-400 rounded-xl p-2.5 mt-1 focus:outline-none focus:border-orange-500" />
+              <input id="perf-ruc" type="text" maxlength="11" oninput="verificarLongitudRuc(this.value)" placeholder="2060..." class="w-full text-xs bg-white border-2 border-amber-300 rounded-xl p-2.5 mt-1 font-extrabold" />
             </div>
             <div class="col-span-3">
-              <button type="button" onclick="consultarRucSunat()" id="btn-sunat" class="w-full bg-slate-900 hover:bg-slate-800 text-amber-400 font-extrabold text-xs py-2.5 px-2 rounded-xl shadow-xs transition">
+              <button type="button" onclick="consultarRucSunat()" id="btn-sunat" class="w-full bg-slate-900 text-amber-400 font-extrabold text-xs py-2.5 px-2 rounded-xl shadow active:scale-95">
                 🔍 SUNAT
               </button>
             </div>
             <div class="col-span-4">
-              <span id="badge-estado-sunat" class="block text-center text-[10px] font-extrabold py-2.5 px-2 rounded-xl bg-white text-slate-500 border border-slate-200 truncate">
+              <span id="badge-estado-sunat" class="block text-center text-[10px] font-extrabold py-2.5 px-2 rounded-xl bg-slate-100 text-slate-500 border border-slate-200">
                 Escribe 11 dígitos
               </span>
             </div>
@@ -346,25 +340,25 @@
 
           <div>
             <label class="text-[11px] font-extrabold text-slate-800">Razón Social / Nombre (Autocompletado por SUNAT)</label>
-            <input id="perf-razon" type="text" placeholder="Se completará automáticamente al poner el RUC..." class="w-full text-xs font-extrabold bg-white border-2 border-amber-300 rounded-xl p-2.5 mt-1" />
+            <input id="perf-razon" type="text" placeholder="Se completará automáticamente al poner el RUC..." class="w-full text-xs bg-white border-2 border-amber-300 rounded-xl p-2.5 mt-1 font-bold" />
           </div>
           <p id="info-direccion-sunat" class="text-[11px] font-semibold text-emerald-800 hidden"></p>
         </div>
 
         <div>
-          <label class="text-xs font-bold text-slate-700">Objetos con RNP vigente que te interesan</label>
+          <label class="text-xs font-bold text-slate-700">Objetos con RNP vigente</label>
           <div class="grid grid-cols-2 gap-2 mt-1.5 text-xs font-bold">
             <label class="flex items-center gap-2 bg-amber-50/60 p-2.5 rounded-xl border border-amber-200">
-              <input type="checkbox" value="BIENES" class="chk-objeto accent-amber-500 w-4 h-4" /> Bienes
+              <input type="checkbox" value="BIENES" class="chk-objeto accent-amber-500" checked /> Bienes
             </label>
             <label class="flex items-center gap-2 bg-amber-50/60 p-2.5 rounded-xl border border-amber-200">
-              <input type="checkbox" value="SERVICIOS" class="chk-objeto accent-amber-500 w-4 h-4" /> Servicios
+              <input type="checkbox" value="SERVICIOS" class="chk-objeto accent-amber-500" checked /> Servicios
             </label>
             <label class="flex items-center gap-2 bg-amber-50/60 p-2.5 rounded-xl border border-amber-200">
-              <input type="checkbox" value="CONSULTORIA DE OBRAS" class="chk-objeto accent-amber-500 w-4 h-4" /> Consultoría Obras
+              <input type="checkbox" value="CONSULTORIA DE OBRAS" class="chk-objeto accent-amber-500" /> Consultoría Obras
             </label>
             <label class="flex items-center gap-2 bg-amber-50/60 p-2.5 rounded-xl border border-amber-200">
-              <input type="checkbox" value="OBRAS" class="chk-objeto accent-amber-500 w-4 h-4" /> Ejecución Obras
+              <input type="checkbox" value="OBRAS" class="chk-objeto accent-amber-500" /> Ejecución Obras
             </label>
           </div>
         </div>
@@ -372,43 +366,43 @@
         <div class="grid grid-cols-3 gap-2">
           <div>
             <label class="text-[11px] font-bold text-slate-700">Experiencia (S/)</label>
-            <input id="perf-exp" type="number" placeholder="200000" class="w-full text-xs font-bold bg-amber-50/50 border-2 border-amber-200 rounded-xl p-2 mt-1" />
+            <input id="perf-exp" type="number" placeholder="200000" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-xl p-2.5 mt-1 font-bold" />
           </div>
           <div>
             <label class="text-[11px] font-bold text-slate-700">Monto Mín (S/)</label>
-            <input id="perf-min" type="number" placeholder="5000" class="w-full text-xs font-bold bg-amber-50/50 border-2 border-amber-200 rounded-xl p-2 mt-1" />
+            <input id="perf-min" type="number" placeholder="5000" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-xl p-2.5 mt-1 font-bold" />
           </div>
           <div>
             <label class="text-[11px] font-bold text-slate-700">Monto Máx (S/)</label>
-            <input id="perf-max" type="number" placeholder="500000" class="w-full text-xs font-bold bg-amber-50/50 border-2 border-amber-200 rounded-xl p-2 mt-1" />
+            <input id="perf-max" type="number" placeholder="500000" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-xl p-2.5 mt-1 font-bold" />
           </div>
         </div>
 
         <div>
           <label class="text-xs font-bold text-slate-700">Mis Rubros / Palabras Clave (separadas por coma)</label>
-          <textarea id="perf-kw" rows="2" placeholder="abastecimiento, contrataciones, consultoria, inventario, archivo, ingenieria" class="w-full text-xs font-semibold bg-amber-50/50 border-2 border-amber-200 rounded-xl p-2.5 mt-1"></textarea>
+          <textarea id="perf-kw" rows="2" placeholder="abastecimiento, contrataciones, inventario, archivo, mantenimiento, climatizacion" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-xl p-2.5 mt-1 font-semibold"></textarea>
         </div>
 
         <div>
-          <label class="text-xs font-bold text-slate-700">Palabras a Excluir (procesos que NO quieres ver)</label>
-          <input id="perf-ex" type="text" placeholder="limpieza, seguridad, medico" class="w-full text-xs font-semibold bg-amber-50/50 border-2 border-amber-200 rounded-xl p-2.5 mt-1" />
+          <label class="text-xs font-bold text-slate-700">Palabras a Excluir (separadas por coma)</label>
+          <input id="perf-ex" type="text" placeholder="limpieza, seguridad, medico" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-xl p-2.5 mt-1 font-semibold" />
         </div>
 
         <div>
-          <label class="text-xs font-bold text-slate-700">Departamentos de interés (escribe TODOS o sepáralos por coma)</label>
-          <input id="perf-deptos" type="text" placeholder="LIMA, CALLAO, LAMBAYEQUE o TODOS" class="w-full text-xs font-semibold bg-amber-50/50 border-2 border-amber-200 rounded-xl p-2.5 mt-1" />
+          <label class="text-xs font-bold text-slate-700">Departamentos de interés (separados por coma o TODOS)</label>
+          <input id="perf-deptos" type="text" placeholder="LIMA, CALLAO, LAMBAYEQUE" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-xl p-2.5 mt-1 font-bold" />
         </div>
 
         <div class="grid grid-cols-2 gap-2 pt-1 text-xs font-bold">
           <label class="flex items-center gap-2 bg-amber-50/60 p-2.5 rounded-xl border border-amber-200">
-            <input id="perf-cm" type="checkbox" checked class="accent-amber-500 w-4 h-4" /> Contratos Menores (≤8 UIT)
+            <input id="perf-cm" type="checkbox" checked class="accent-amber-500" /> Contratos Menores (≤8 UIT)
           </label>
           <label class="flex items-center gap-2 bg-amber-50/60 p-2.5 rounded-xl border border-amber-200">
-            <input id="perf-ps" type="checkbox" checked class="accent-amber-500 w-4 h-4" /> Procedimientos Selección
+            <input id="perf-ps" type="checkbox" checked class="accent-amber-500" /> Procedimientos Selección
           </label>
         </div>
 
-        <button onclick="guardarPerfil()" id="btn-guardar" class="w-full bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600 text-slate-950 font-extrabold text-sm py-3.5 rounded-2xl shadow-md transition">
+        <button onclick="guardarPerfil()" id="btn-guardar" class="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-extrabold text-sm py-3.5 rounded-2xl shadow-md transition active:scale-98">
           💾 Guardar Perfil y Ver Mis Oportunidades
         </button>
       </div>
@@ -420,39 +414,39 @@
     <section id="vista-sincronizar" class="hidden space-y-4">
       <!-- Opción 1: Subir Excel / CSV descargado del SEACE -->
       <div class="card-warm-orange rounded-3xl p-5 space-y-3">
-        <span class="bg-orange-500 text-white text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase">Carga Directa 100% Real</span>
+        <span class="bg-orange-500 text-white text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase">Carga Masiva Inmediata</span>
         <h2 class="text-lg font-extrabold text-slate-900">Importar Reporte Excel / CSV del SEACE</h2>
         <p class="text-xs text-slate-700 leading-relaxed">
-          Cuando descargues un archivo Excel (<code>.xlsx</code>, <code>.xls</code> o <code>.csv</code>) del buscador público del SEACE o de Contratos Menores, súbelo aquí para inyectar todos esos procesos reales al instante en la App:
+          Cuando descargues un archivo Excel (<code>.xlsx</code>, <code>.xls</code> o <code>.csv</code>) desde el buscador público del SEACE, súbelo aquí para inyectar todos los procesos reales en 1 segundo:
         </p>
-        <input id="archivo-seace" type="file" accept=".xlsx,.xls,.csv" onchange="importarExcelSEACE(event)" class="block w-full text-xs text-slate-700 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-extrabold file:bg-slate-900 file:text-amber-400 hover:file:bg-slate-800 cursor-pointer bg-white p-2 rounded-2xl border-2 border-orange-300" />
+        <input id="archivo-seace" type="file" accept=".xlsx,.xls,.csv" onchange="importarExcelSEACE(event)" class="block w-full text-xs text-slate-700 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-extrabold file:bg-slate-900 file:text-amber-400 hover:file:bg-slate-800" />
         <p id="estado-importacion" class="text-xs font-bold text-emerald-700 hidden"></p>
       </div>
 
       <!-- Opción 2: Registrar una convocatoria real manualmente -->
       <div class="bg-white rounded-3xl p-5 border-2 border-amber-300 space-y-3">
-        <h3 class="font-extrabold text-sm text-slate-900">➕ Publicar / Agregar un Proceso Real Rápido</h3>
+        <h3 class="font-extrabold text-sm text-slate-900">+ Publicar / Agregar Convocatoria Manualmente</h3>
         <div class="grid grid-cols-2 gap-2">
-          <select id="nuevo-fuente" class="text-xs font-bold bg-amber-50 border border-amber-300 rounded-xl p-2.5">
+          <select id="nuevo-fuente" class="text-xs font-bold bg-amber-50 border border-amber-300 rounded-xl p-2">
             <option value="CONTRATO_MENOR">Contrato Menor (≤ 8 UIT)</option>
             <option value="PROCEDIMIENTO_SELECCION">Procedimiento Selección</option>
           </select>
-          <select id="nuevo-objeto" class="text-xs font-bold bg-amber-50 border border-amber-300 rounded-xl p-2.5">
+          <select id="nuevo-objeto" class="text-xs font-bold bg-amber-50 border border-amber-300 rounded-xl p-2">
             <option value="SERVICIOS">SERVICIOS</option>
             <option value="BIENES">BIENES</option>
             <option value="CONSULTORIA DE OBRAS">CONSULTORIA DE OBRAS</option>
             <option value="OBRAS">OBRAS</option>
           </select>
         </div>
-        <input id="nuevo-nomenclatura" type="text" placeholder="Nomenclatura (Ej: AS-SM-15-2026-MP-FN-1 o REQ-2026)" class="w-full text-xs font-bold bg-amber-50 border border-amber-300 rounded-xl p-2.5" />
-        <input id="nuevo-entidad" type="text" placeholder="Entidad (Ej: MINISTERIO PUBLICO / MUNICIPALIDAD...)" class="w-full text-xs font-bold bg-amber-50 border border-amber-300 rounded-xl p-2.5" />
-        <textarea id="nuevo-desc" rows="2" placeholder="Descripción completa del requerimiento o proceso..." class="w-full text-xs font-semibold bg-amber-50 border border-amber-300 rounded-xl p-2.5"></textarea>
+        <input id="nuevo-nomenclatura" type="text" placeholder="Nomenclatura (Ej: AS-SM-15-2026-MINSA-1)" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-xl p-2.5 font-bold" />
+        <input id="nuevo-entidad" type="text" placeholder="Entidad (Ej: MINISTERIO DE SALUD)" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-xl p-2.5 font-bold" />
+        <textarea id="nuevo-desc" rows="2" placeholder="Descripción completa del requerimiento..." class="w-full text-xs bg-slate-50 border border-slate-300 rounded-xl p-2.5 font-semibold"></textarea>
         <div class="grid grid-cols-3 gap-2">
-          <input id="nuevo-depto" type="text" placeholder="Depto (LIMA)" value="LIMA" class="w-full text-xs font-bold bg-amber-50 border border-amber-300 rounded-xl p-2" />
-          <input id="nuevo-monto" type="number" placeholder="Monto S/" class="w-full text-xs font-bold bg-amber-50 border border-amber-300 rounded-xl p-2" />
-          <input id="nuevo-dias" type="number" placeholder="Días plazo" value="3" class="w-full text-xs font-bold bg-amber-50 border border-amber-300 rounded-xl p-2" />
+          <input id="nuevo-depto" type="text" placeholder="Depto (LIMA)" value="LIMA" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-xl p-2 font-bold" />
+          <input id="nuevo-monto" type="number" placeholder="Monto S/" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-xl p-2 font-bold" />
+          <input id="nuevo-dias" type="number" placeholder="Días plazo" value="3" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-xl p-2 font-bold" />
         </div>
-        <button onclick="agregarProcesoManual()" class="w-full bg-slate-900 text-amber-400 font-extrabold text-xs py-3 rounded-2xl">
+        <button onclick="agregarProcesoManual()" class="w-full bg-slate-900 text-amber-400 font-extrabold text-xs py-3 rounded-xl shadow">
           Guardar Proceso en la Base de Datos
         </button>
       </div>
@@ -461,9 +455,9 @@
       <div class="bg-red-50 rounded-3xl p-4 border-2 border-red-200 flex items-center justify-between gap-3">
         <div>
           <h4 class="text-xs font-extrabold text-red-900">¿Deseas borrar los procesos de demostración?</h4>
-          <p class="text-[11px] text-red-700">Limpia los procesos de ejemplo (CM-2026-001, etc.) de Supabase.</p>
+          <p class="text-[11px] text-red-700">Limpia los procesos de ejemplo (CM-2026-..., PS-2026-...) de tu base de datos.</p>
         </div>
-        <button onclick="eliminarProcesosDemo()" class="bg-red-600 text-white text-xs font-extrabold px-3 py-2 rounded-xl shrink-0">
+        <button onclick="eliminarProcesosDemo()" class="bg-red-600 text-white text-xs font-extrabold px-3 py-2.5 rounded-xl shrink-0">
           Borrar Demo
         </button>
       </div>
@@ -472,21 +466,21 @@
   </main>
 
   <!-- BARRA DE NAVEGACIÓN INFERIOR CÁLIDA -->
-  <nav class="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 border-t-2 border-amber-600/30 z-30 shadow-lg">
+  <nav class="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-amber-400 via-amber-400 to-yellow-500 border-t-2 border-amber-600/30 z-30 shadow-lg">
     <div class="max-w-md mx-auto grid grid-cols-4 text-center">
-      <button onclick="irAVista('inicio')" id="nav-inicio" class="py-2.5 flex flex-col items-center text-slate-950 font-extrabold text-[11px] bg-amber-300/60">
+      <button onclick="irAVista('inicio')" id="nav-inicio" class="py-2.5 flex flex-col items-center text-slate-950 font-extrabold text-xs">
         <span class="text-base">🏠</span>
         <span>Inicio</span>
       </button>
-      <button onclick="irAVista('parati')" id="nav-parati" class="py-2.5 flex flex-col items-center text-slate-800/70 font-bold text-[11px]">
+      <button onclick="irAVista('parati')" id="nav-parati" class="py-2.5 flex flex-col items-center text-slate-800/70 font-bold text-xs">
         <span class="text-base">🎯</span>
         <span>Para Mí</span>
       </button>
-      <button onclick="irAVista('explorar')" id="nav-explorar" class="py-2.5 flex flex-col items-center text-slate-800/70 font-bold text-[11px]">
-        <span class="text-base">🔍</span>
+      <button onclick="irAVista('explorar')" id="nav-explorar" class="py-2.5 flex flex-col items-center text-slate-800/70 font-bold text-xs">
+        <span class="text-base">🔎</span>
         <span>Filtrar SEACE</span>
       </button>
-      <button onclick="irAVista('perfiles')" id="nav-perfiles" class="py-2.5 flex flex-col items-center text-slate-800/70 font-bold text-[11px]">
+      <button onclick="irAVista('perfiles')" id="nav-perfiles" class="py-2.5 flex flex-col items-center text-slate-800/70 font-bold text-xs">
         <span class="text-base">🏢</span>
         <span>Empresas</span>
       </button>
@@ -495,14 +489,14 @@
 
   <script>
     // =========================================================================
-    // CONEXIÓN EN VIVO A TU SUPABASE
+    // CONEXIÓN EN VIVO A TU SUPABASE Y TOKEN OFICIAL APISPERU (SUNAT)
     // =========================================================================
     const SUPABASE_URL = "https://ggjhiwffoiftgfpgmmeu.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_Z4Ltm0PaOUmmoOdYyd4Nkw_DfCxG9ax";
     const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // Si tienes un token gratuito opcional de apisperu.com, puedes colocarlo aquí:
-    const TOKEN_SUNAT_OPCIONAL = "";
+    // Token oficial de ApisPeru integrado:
+    const TOKEN_SUNAT_OPCIONAL = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InJjYXN0aWxsby5pbWxAZ21haWwuY29tIiwianRpIjoiOTNmN2NjODM1M2Q0ZThjZSJ9.9wlbFeHTpDNJqA0A_63S8rsbfzjxWPF8Yk8UNGIE-bg";
 
     let todasLasEmpresas = [];
     let perfilActual = null;
@@ -539,7 +533,7 @@
         perfiles: "Mis Empresas",
         sincronizar: "Datos SEACE"
       };
-      document.getElementById("titulo-cabecera").innerText = titulos[vista] || "Inicio";
+      document.getElementById("titulo-cabecera").innerText = titulos[vista] || "Radar SEACE";
 
       vistas.forEach(v => {
         const sec = document.getElementById(`vista-${v}`);
@@ -547,8 +541,8 @@
         const btn = document.getElementById(`nav-${v}`);
         if (btn) {
           btn.className = (v === vista)
-            ? "py-2.5 flex flex-col items-center text-slate-950 font-extrabold text-[11px] bg-amber-300/60"
-            : "py-2.5 flex flex-col items-center text-slate-800/70 font-bold text-[11px]";
+            ? "py-2.5 flex flex-col items-center text-slate-950 font-extrabold text-xs"
+            : "py-2.5 flex flex-col items-center text-slate-800/70 font-bold text-xs";
         }
       });
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -561,17 +555,17 @@
 
     // Semáforo de horas restantes
     function calcularSemaforo(fechaLimiteISO) {
-      if (!fechaLimiteISO) return { color: "bg-emerald-100 text-emerald-900 border-emerald-300", texto: "En plazo", horas: 999 };
+      if (!fechaLimiteISO) return { color: "bg-emerald-100 text-emerald-900 border-emerald-300", texto: "En consulta", horas: 99 };
       const ahora = new Date();
       const limite = new Date(fechaLimiteISO);
       const horasRestantes = (limite - ahora) / (1000 * 60 * 60);
 
       if (horasRestantes <= 0) {
-        return { color: "bg-slate-200 text-slate-600 border-slate-300", texto: "Cerrado", horas: horasRestantes };
+        return { color: "bg-slate-200 text-slate-600 border-slate-300", texto: "Plazo cerrado", horas: 0 };
       } else if (horasRestantes <= 24) {
-        return { color: "bg-red-100 text-red-800 border-red-300 animate-pulse", texto: `🔥 Vence en ${Math.ceil(horasRestantes)}h`, horas: horasRestantes };
+        return { color: "bg-red-100 text-red-800 border-red-300 animate-pulse", texto: `🔴 Vence en ${Math.ceil(horasRestantes)}h`, horas: horasRestantes };
       } else if (horasRestantes <= 72) {
-        return { color: "bg-amber-100 text-amber-900 border-amber-400", texto: `⏳ Quedan ${Math.ceil(horasRestantes / 24)} días`, horas: horasRestantes };
+        return { color: "bg-amber-100 text-amber-900 border-amber-400", texto: `🟡 Quedan ${Math.ceil(horasRestantes / 24)} días`, horas: horasRestantes };
       } else {
         return { color: "bg-emerald-100 text-emerald-900 border-emerald-300", texto: `🟢 Quedan ${Math.ceil(horasRestantes / 24)} días`, horas: horasRestantes };
       }
@@ -588,39 +582,41 @@
       const semaforo = calcularSemaforo(p.fecha_limite_oferta);
       const esMenor = p.fuente === "CONTRATO_MENOR";
       const badgeFuente = esMenor
-        ? `<span class="bg-amber-200 text-amber-950 text-[10px] font-extrabold px-2.5 py-0.5 rounded-lg">Contrato Menor ≤ 8 UIT</span>`
-        : `<span class="bg-sky-100 text-sky-900 text-[10px] font-extrabold px-2.5 py-0.5 rounded-lg">Procedimiento Selección</span>`;
+        ? `<span class="bg-amber-200 text-amber-950 text-[10px] font-extrabold px-2.5 py-0.5 rounded-lg">⚡ CONTRATO MENOR (≤8 UIT)</span>`
+        : `<span class="bg-sky-100 text-sky-900 text-[10px] font-extrabold px-2.5 py-0.5 rounded-lg">🏛️ PROCEDIMIENTO SELECCIÓN</span>`;
 
       const bloqueMatch = (mostrarMatch && p.puntaje_compatibilidad)
-        ? `<div class="flex items-center justify-between bg-amber-100 border border-amber-400 rounded-2xl px-3 py-2 mb-2.5">
-             <span class="text-xs font-extrabold text-amber-950">🎯 ${p.puntaje_compatibilidad}% Compatible</span>
-             <span class="text-[11px] font-bold text-amber-900 truncate max-w-[200px]">${p.motivo_match || "Calza con tu perfil"}</span>
+        ? `<div class="flex items-center justify-between bg-amber-100 border border-amber-300 rounded-2xl px-3 py-1.5 mb-2">
+             <span class="text-xs font-extrabold text-amber-950">🔥 ${p.puntaje_compatibilidad}% Compatible</span>
+             <span class="text-[11px] font-bold text-amber-900 truncate max-w-[190px]">${p.motivo_match || "Calza con tu perfil"}</span>
            </div>`
         : "";
 
       const urlDoc = p.url_documento || (esMenor ? "https://prod6.seace.gob.pe/buscador-publico/contrataciones" : "https://prod2.seace.gob.pe/seacebus-uiwd-pub/buscadorPublico/buscadorPublico.xhtml");
       const textoWa = encodeURIComponent(
-        `📌 *Oportunidad SEACE Detectada*\n` +
-        `• *Proceso:* ${p.nomenclatura}\n` +
-        `• *Entidad:* ${p.entidad}\n` +
-        `• *Objeto:* ${p.objeto_contratacion} (${p.departamento})\n` +
-        `• *Descripción:* ${p.descripcion}\n` +
-        `• *Monto Ref:* ${formatoSoles(p.monto_referencial)}\n` +
-        `• *Enlace:* ${urlDoc}`
+        `📊 *Oportunidad SEACE Detectada*\n` +
+        `📌 *Proceso:* ${p.nomenclatura}\n` +
+        `🏛️ *Entidad:* ${p.entidad}\n` +
+        `📦 *Objeto:* ${p.objeto_contratacion} (${p.departamento})\n` +
+        `📝 *Descripción:* ${p.descripcion}\n` +
+        `💰 *Monto Ref:* ${formatoSoles(p.monto_referencial)}\n` +
+        `🔗 *Enlace:* ${urlDoc}`
       );
 
       return `
-        <article class="bg-white rounded-3xl p-4 shadow-sm border-2 border-amber-200/80 space-y-2.5">
+        <article class="bg-white rounded-3xl p-4 shadow-sm border-2 border-amber-200 space-y-2.5">
           ${bloqueMatch}
           <div class="flex items-center justify-between gap-1 flex-wrap">
             ${badgeFuente}
             <span class="text-[11px] font-extrabold px-2.5 py-0.5 rounded-lg border ${semaforo.color}">${semaforo.texto}</span>
           </div>
+
           <div>
             <p class="text-xs font-extrabold text-orange-600">${p.nomenclatura}</p>
             <h3 class="text-xs font-extrabold text-slate-900 mt-0.5">${p.entidad}</h3>
             <p class="text-xs text-slate-700 mt-1 leading-relaxed font-medium">${p.descripcion}</p>
           </div>
+
           <div class="bg-amber-50/70 border border-amber-200 rounded-2xl p-2.5 grid grid-cols-3 gap-2 text-center">
             <div>
               <span class="block text-[10px] font-bold text-slate-500">Monto (${etiquetaOrigenMonto(p.origen_monto)})</span>
@@ -635,11 +631,12 @@
               <span class="text-xs font-extrabold text-slate-800">${p.departamento}</span>
             </div>
           </div>
+
           <div class="grid grid-cols-2 gap-2 pt-1">
-            <a href="${urlDoc}" target="_blank" rel="noopener" class="bg-slate-900 hover:bg-slate-800 text-amber-400 text-xs font-extrabold py-2.5 rounded-xl text-center">
+            <a href="${urlDoc}" target="_blank" rel="noopener" class="bg-slate-900 hover:bg-slate-800 text-amber-400 text-center text-xs font-extrabold py-2.5 rounded-xl transition">
               📄 Ver en SEACE
             </a>
-            <a href="https://wa.me/?text=${textoWa}" target="_blank" rel="noopener" class="bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-extrabold py-2.5 rounded-xl text-center">
+            <a href="https://wa.me/?text=${textoWa}" target="_blank" rel="noopener" class="bg-emerald-600 hover:bg-emerald-700 text-white text-center text-xs font-extrabold py-2.5 rounded-xl transition">
               📲 Enviar WhatsApp
             </a>
           </div>
@@ -648,7 +645,7 @@
     }
 
     // =========================================================================
-    // CONEXIÓN AUTOMÁTICA CON PADRÓN PÚBLICO SUNAT POR RUC
+    // CONEXIÓN AUTOMÁTICA CON PADRÓN PÚBLICO SUNAT POR RUC (CON TOKEN APISPERU)
     // =========================================================================
     function verificarLongitudRuc(valor) {
       const limpio = valor.replace(/\D/g, "");
@@ -664,42 +661,51 @@
       const badge = document.getElementById("badge-estado-sunat");
       const infoDir = document.getElementById("info-direccion-sunat");
 
-      if (ruc.length !== 11 || (!ruc.startsWith("10") && !ruc.startsWith("20") && !ruc.startsWith("15") && !ruc.startsWith("17"))) {
+      if (ruc.length !== 11 || (!ruc.startsWith("10") && !ruc.startsWith("15") && !ruc.startsWith("17") && !ruc.startsWith("20"))) {
         alert("Ingresa un número de RUC válido de 11 dígitos (iniciado en 10, 15, 17 o 20).");
         return;
       }
 
       btn.innerText = "⏳...";
-      badge.className = "block text-center text-[10px] font-extrabold py-2.5 px-2 rounded-xl bg-amber-100 text-amber-900 border border-amber-300";
-      badge.innerText = "Consultando...";
+      badge.className = "block text-center text-[10px] font-extrabold py-2.5 px-2 rounded-xl bg-amber-200 text-amber-900 border border-amber-400 animate-pulse";
+      badge.innerText = "Consultando SUNAT...";
       infoDir.classList.add("hidden");
 
       try {
         let datos = null;
 
-        // Intento 1: Token de ApisPeru si fue configurado
-        if (TOKEN_SUNAT_OPCIONAL) {
+        // 1. Consulta directa a ApisPeru con tu Token
+        if (TOKEN_SUNAT_OPCIONAL && TOKEN_SUNAT_OPCIONAL.trim() !== "") {
           try {
-            const r1 = await fetch(`https://dniruc.apisperu.com/api/v1/ruc/${ruc}?token=${TOKEN_SUNAT_OPCIONAL}`);
-            if (r1.ok) datos = await r1.json();
-          } catch (_) {}
+            const urlApisPeru = `https://dniruc.apisperu.com/api/v1/ruc/${ruc}?token=${TOKEN_SUNAT_OPCIONAL.trim()}`;
+            const r1 = await fetch(urlApisPeru);
+            if (r1.ok) {
+              const json1 = await r1.json();
+              if (json1 && (json1.razonSocial || json1.nombre)) {
+                datos = json1;
+              }
+            }
+          } catch (e) {
+            console.warn("Aviso ApisPeru:", e);
+          }
         }
 
-        // Intento 2: Puente público AllOrigins hacia API SUNAT Perú
+        // 2. Respaldo si el RUC ya existe en Supabase
         if (!datos || (!datos.razonSocial && !datos.nombre)) {
-          try {
-            const urlPublica = encodeURIComponent(`https://api.apis.net.pe/v1/ruc?numero=${ruc}`);
-            const r2 = await fetch(`https://api.allorigins.win/raw?url=${urlPublica}`);
-            if (r2.ok) datos = await r2.json();
-          } catch (_) {}
-        }
+          const { data: localEmp } = await sb
+            .from("perfiles_empresa")
+            .select("razon_social, departamentos_interes")
+            .eq("ruc", ruc)
+            .maybeSingle();
 
-        // Intento 3: Segundo puente de respaldo CORSProxy
-        if (!datos || (!datos.razonSocial && !datos.nombre)) {
-          try {
-            const r3 = await fetch(`https://corsproxy.io/?${encodeURIComponent(`https://api.apis.net.pe/v1/ruc?numero=${ruc}`)}`);
-            if (r3.ok) datos = await r3.json();
-          } catch (_) {}
+          if (localEmp) {
+            datos = {
+              razonSocial: localEmp.razon_social,
+              estado: "ACTIVO",
+              condicion: "HABIDO",
+              departamento: (localEmp.departamentos_interes && localEmp.departamentos_interes[0]) || "LIMA"
+            };
+          }
         }
 
         const razonSocial = (datos?.razonSocial || datos?.nombre || "").trim();
@@ -709,28 +715,29 @@
         const direccion = (datos?.direccion || "").trim();
 
         if (!razonSocial) {
-          throw new Error("Servidor público ocupado");
+          throw new Error("No se encontró el RUC en el padrón SUNAT");
         }
 
-        // Llenar automáticamente los campos de la empresa
+        // Autocompletar campos del formulario
         document.getElementById("perf-razon").value = razonSocial;
         if (depto) {
           document.getElementById("perf-deptos").value = depto === "LIMA" ? "LIMA, CALLAO" : depto;
         }
         if (direccion) {
-          infoDir.innerText = `📍 Domicilio SUNAT: ${direccion} (${depto || "PERÚ"})`;
+          infoDir.innerText = `📍 Domicilio Fiscal SUNAT: ${direccion} (${depto || "PERÚ"})`;
           infoDir.classList.remove("hidden");
         }
 
         const esValido = estado.includes("ACTIVO") && condicion.includes("HABIDO");
         badge.className = esValido
           ? "block text-center text-[10px] font-extrabold py-2.5 px-2 rounded-xl bg-emerald-100 text-emerald-900 border border-emerald-400"
-          : "block text-center text-[10px] font-extrabold py-2.5 px-2 rounded-xl bg-red-100 text-red-900 border border-red-400";
+          : "block text-center text-[10px] font-extrabold py-2.5 px-2 rounded-xl bg-red-100 text-red-800 border border-red-300";
         badge.innerText = `${estado} • ${condicion}`;
 
       } catch (err) {
         badge.className = "block text-center text-[10px] font-extrabold py-2.5 px-2 rounded-xl bg-amber-100 text-amber-900 border border-amber-300";
-        badge.innerText = "Completa nombre";
+        badge.innerText = "Completa manual";
+        document.getElementById("perf-razon").focus();
       } finally {
         btn.innerText = "🔍 SUNAT";
       }
@@ -744,7 +751,6 @@
       alerta.classList.add("hidden");
 
       try {
-        // 1. Cargar todos los procesos vigentes
         const { data: procData, error: procErr } = await sb
           .from("procesos_seace")
           .select("*")
@@ -755,7 +761,6 @@
         todosLosProcesos = procData || [];
         document.getElementById("badge-inicio-total").innerText = `${todosLosProcesos.length} vigentes`;
 
-        // 2. Cargar TODAS las empresas/perfiles registrados
         const { data: perfData, error: perfErr } = await sb
           .from("perfiles_empresa")
           .select("*")
@@ -765,6 +770,7 @@
         todasLasEmpresas = perfData || [];
 
         const idGuardado = idEmpresaPreferida || localStorage.getItem("radar_seace_empresa_id");
+
         if (todasLasEmpresas.length > 0) {
           perfilActual = todasLasEmpresas.find(e => e.id === idGuardado) || todasLasEmpresas[0];
           localStorage.setItem("radar_seace_empresa_id", perfilActual.id);
@@ -821,21 +827,21 @@
     function renderListaEmpresas() {
       const cont = document.getElementById("lista-empresas-registradas");
       if (todasLasEmpresas.length === 0) {
-        cont.innerHTML = `<p class="text-xs text-slate-500 py-2">Aún no hay empresas registradas. Ingresa tu RUC abajo para crear la primera.</p>`;
+        cont.innerHTML = `<p class="text-xs text-slate-500 py-2">Aún no hay empresas registradas.</p>`;
         return;
       }
       cont.innerHTML = todasLasEmpresas.map(e => {
         const esActiva = perfilActual && perfilActual.id === e.id;
         return `
-          <div class="flex items-center justify-between p-3 rounded-2xl border-2 ${esActiva ? "bg-amber-100 border-amber-500" : "bg-white border-slate-200"}">
+          <div class="flex items-center justify-between p-3 rounded-2xl border-2 ${esActiva ? "bg-amber-100/90 border-amber-500" : "bg-white border-slate-200"}">
             <div onclick="cambiarEmpresaActiva('${e.id}')" class="cursor-pointer flex-1 pr-2">
               <div class="flex items-center gap-1.5">
                 <span class="text-xs font-extrabold text-slate-900">${e.razon_social}</span>
-                ${esActiva ? `<span class="bg-amber-500 text-slate-950 text-[9px] font-extrabold px-2 py-0.5 rounded-full">ACTIVA</span>` : ""}
+                ${esActiva ? `<span class="bg-amber-500 text-slate-950 text-[9px] font-extrabold px-1.5 py-0.5 rounded-md">ACTIVA</span>` : ""}
               </div>
-              <p class="text-[11px] text-slate-600 font-medium">RUC: ${e.ruc} • Rubros: ${(e.palabras_clave || []).slice(0, 3).join(", ")}</p>
+              <p class="text-[11px] text-slate-600 font-medium">RUC: ${e.ruc} • Exp: ${formatoSoles(e.experiencia_acumulada_soles)}</p>
             </div>
-            <button onclick="eliminarEmpresa('${e.id}', '${e.razon_social}')" title="Eliminar este perfil" class="bg-red-100 hover:bg-red-200 text-red-700 text-xs font-extrabold px-2.5 py-1.5 rounded-xl">
+            <button onclick="eliminarEmpresa('${e.id}', '${e.razon_social}')" title="Eliminar" class="text-red-600 hover:bg-red-50 p-2 rounded-xl text-xs font-bold">
               🗑️
             </button>
           </div>
@@ -843,7 +849,6 @@
       }).join("");
     }
 
-    // Invocar función RPC obtener_oportunidades_perfil en Supabase
     async function cargarOportunidadesPerfil(empresaId) {
       const contenedor = document.getElementById("lista-parati");
       const { data: matchData, error } = await sb.rpc("obtener_oportunidades_perfil", {
@@ -851,12 +856,13 @@
       });
 
       if (error) {
-        contenedor.innerHTML = `<div class="bg-amber-50 p-4 rounded-2xl text-xs text-amber-900 border border-amber-300">Error al calcular compatibilidad: ${error.message}</div>`;
+        contenedor.innerHTML = `<div class="bg-amber-50 p-4 rounded-2xl text-xs text-amber-900">${error.message}</div>`;
         return;
       }
 
       const mapaUrl = {};
       todosLosProcesos.forEach(pr => { mapaUrl[pr.id] = pr.url_documento; });
+
       const lista = (matchData || []).map(item => ({
         ...item,
         url_documento: mapaUrl[item.proceso_id]
@@ -864,13 +870,13 @@
 
       ultimasOportunidadesMatch = lista;
       document.getElementById("contador-match").innerText = lista.length;
-      document.getElementById("badge-inicio-match").innerText = `${lista.length} compatibles`;
+      document.getElementById("badge-inicio-match").innerText = `${lista.length} compat.`;
 
       if (lista.length === 0) {
         contenedor.innerHTML = `
           <div class="bg-white rounded-3xl p-6 text-center border-2 border-amber-200 space-y-2">
-            <p class="text-sm font-extrabold text-slate-800">No hay procesos vigentes que superen el 50% de compatibilidad con este perfil</p>
-            <p class="text-xs text-slate-600">Puedes ampliar tus palabras clave o departamentos en "Empresas" o revisar todos los procesos en "Filtrar SEACE".</p>
+            <p class="text-sm font-extrabold text-slate-800">No hay procesos vigentes con +50% de compatibilidad</p>
+            <p class="text-xs text-slate-600">Puedes ampliar tus palabras clave o departamentos en "Mis Empresas".</p>
           </div>`;
         return;
       }
@@ -878,9 +884,6 @@
       contenedor.innerHTML = lista.map(p => crearTarjetaProceso(p, true)).join("");
     }
 
-    // =========================================================================
-    // BUSCADOR Y FILTROS MULTICRITERIO
-    // =========================================================================
     function limpiarFiltros() {
       document.getElementById("filtro-texto").value = "";
       document.getElementById("filtro-fuente").value = "TODOS";
@@ -925,7 +928,6 @@
 
       document.getElementById("contador-explorar").innerText = filtrados.length;
       const contenedor = document.getElementById("lista-explorar");
-
       if (filtrados.length === 0) {
         contenedor.innerHTML = `<div class="bg-white rounded-3xl p-6 text-center text-xs font-bold text-slate-500 border-2 border-amber-200">No se encontraron procesos con esos filtros.</div>`;
         return;
@@ -933,14 +935,11 @@
       contenedor.innerHTML = filtrados.map(p => crearTarjetaProceso(p, false)).join("");
     }
 
-    // =========================================================================
-    // CREAR, EDITAR Y ELIMINAR PERFILES DE EMPRESAS
-    // =========================================================================
     function prepararNuevoPerfil() {
-      document.getElementById("titulo-form-perfil").innerText = "Registrar Nueva Empresa / Usuario";
+      document.getElementById("titulo-form-perfil").innerText = "Registrar Nueva Empresa";
       document.getElementById("badge-modo-perfil").innerText = "NUEVO REGISTRO";
       document.getElementById("badge-estado-sunat").innerText = "Escribe 11 dígitos";
-      document.getElementById("badge-estado-sunat").className = "block text-center text-[10px] font-extrabold py-2.5 px-2 rounded-xl bg-white text-slate-500 border border-slate-200 truncate";
+      document.getElementById("badge-estado-sunat").className = "block text-center text-[10px] font-extrabold py-2.5 px-2 rounded-xl bg-slate-100 text-slate-500 border border-slate-200";
       document.getElementById("info-direccion-sunat").classList.add("hidden");
       document.getElementById("perf-ruc").value = "";
       document.getElementById("perf-razon").value = "";
@@ -1041,13 +1040,9 @@
       await recargarDatos();
     }
 
-    // =========================================================================
-    // IMPORTADOR REAL DE EXCEL / CSV DEL SEACE Y GESTIÓN DE PROCESOS
-    // =========================================================================
     function importarExcelSEACE(event) {
       const file = event.target.files[0];
       if (!file) return;
-
       const estado = document.getElementById("estado-importacion");
       estado.classList.remove("hidden");
       estado.innerText = "⏳ Leyendo archivo del SEACE...";
@@ -1067,19 +1062,19 @@
 
           const ahora = new Date();
           const lote = filas.map((f, idx) => {
-            const nomenclatura = f["Nomenclatura"] || f["NOMENCLATURA"] || f["N° Requerimiento"] || f["Codigo"] || f["Proceso"] || `SEACE-${Date.now()}-${idx}`;
-            const entidad = f["Nombre o Sigla de la Entidad"] || f["Entidad"] || f["ENTIDAD"] || "ENTIDAD PUBLICA";
-            const objetoRaw = (f["Objeto de Contratación"] || f["Objeto"] || f["OBJETO"] || "SERVICIOS").toString().toUpperCase();
+            const nomenclatura = f["Nomenclatura"] || f["NOMENCLATURA"] || f["N° Requerimiento"] || `SEACE-${idx + 1}`;
+            const entidad = f["Nombre o Sigla de la Entidad"] || f["Entidad"] || f["ENTIDAD"] || "ENTIDAD PÚBLICA";
+            const objetoRaw = String(f["Objeto de Contratación"] || f["Objeto"] || "SERVICIOS").toUpperCase();
             let objeto = "SERVICIOS";
             if (objetoRaw.includes("BIEN")) objeto = "BIENES";
             else if (objetoRaw.includes("CONSULT")) objeto = "CONSULTORIA DE OBRAS";
             else if (objetoRaw.includes("OBRA")) objeto = "OBRAS";
 
-            const descripcion = f["Descripción del Objeto"] || f["Descripcion"] || f["DESCRIPCION"] || f["Síntesis"] || "Convocatoria importada del SEACE";
-            const depto = (f["Departamento"] || f["DEPARTAMENTO"] || "LIMA").toString().toUpperCase();
-            const montoRaw = f["Valor Referencial / Valor Estimado"] || f["Monto"] || f["Cuantia"] || f["MONTO"] || 38000;
-            const monto = Number(String(montoRaw).replace(/[^0-9.]/g, "")) || 38000;
-            const esMenor = String(nomenclatura).toUpperCase().includes("REQ") || String(nomenclatura).toUpperCase().includes("CM") || monto <= 44000;
+            const descripcion = f["Descripción del Objeto"] || f["Descripcion"] || "Proceso importado del SEACE";
+            const depto = String(f["Departamento"] || f["DEPARTAMENTO"] || "LIMA").toUpperCase().trim();
+            const montoRaw = f["Valor Referencial / Valor Estimado"] || f["Monto"] || "38500";
+            const monto = Number(String(montoRaw).replace(/[^0-9.]/g, "")) || 38500;
+            const esMenor = String(nomenclatura).toUpperCase().includes("REQ") || String(nomenclatura).toUpperCase().includes("CM");
 
             return {
               codigo_unico: `REAL-${String(nomenclatura).replace(/\s+/g, "-")}`,
@@ -1102,7 +1097,7 @@
           const { error } = await sb.from("procesos_seace").upsert(lote, { onConflict: "codigo_unico" });
           if (error) throw error;
 
-          estado.innerText = `✅ ¡Se importaron ${lote.length} procesos reales del archivo correctamente!`;
+          estado.innerText = `✅ ¡Se importaron ${lote.length} procesos reales a tu base de datos!`;
           await recargarDatos();
         } catch (err) {
           estado.innerText = `❌ Error al importar: ${err.message}`;
@@ -1119,9 +1114,10 @@
         alert("Completa Nomenclatura, Entidad y Descripción.");
         return;
       }
+
       const fuente = document.getElementById("nuevo-fuente").value;
       const objeto = document.getElementById("nuevo-objeto").value;
-      const depto = (document.getElementById("nuevo-depto").value || "LIMA").trim().toUpperCase();
+      const depto = (document.getElementById("nuevo-depto").value || "LIMA").toUpperCase().trim();
       const monto = Number(document.getElementById("nuevo-monto").value || 35000);
       const dias = Number(document.getElementById("nuevo-dias").value || 3);
       const ahora = new Date();
@@ -1153,7 +1149,7 @@
     }
 
     async function eliminarProcesosDemo() {
-      if (!confirm("¿Deseas borrar los procesos de prueba (CM-2026-..., PS-2026-...) de tu base de datos?")) return;
+      if (!confirm("¿Deseas borrar los procesos de prueba (CM-2026-..., PS-2026-...)?")) return;
       const codigosDemo = [
         "CM-2026-001", "PS-2026-002", "PS-2026-003", "CM-2026-004",
         "CM-2026-88412", "PS-2026-99104", "CM-2026-88490", "PS-2026-99315", "CM-2026-88510"
@@ -1163,13 +1159,13 @@
         alert("Error al borrar demo: " + error.message);
         return;
       }
-      alert("✅ Procesos de prueba eliminados.");
+      alert("🗑️ Procesos de prueba eliminados.");
       await recargarDatos();
     }
 
     function compartirResumenWhatsapp() {
       const emp = perfilActual ? perfilActual.razon_social : "Mi Empresa";
-      const msg = encodeURIComponent(`🚀 *Radar SEACE Activo*\nEmpresa: *${emp}*\nOportunidades compatibles hoy: *${ultimasOportunidadesMatch.length}*\nApp: https://recb1806-ui.github.io/radar-seace/`);
+      const msg = encodeURIComponent(`📊 *Radar SEACE Activo*\nEmpresa: *${emp}*\nOportunidades compatibles hoy: *${ultimasOportunidadesMatch.length}*`);
       window.open(`https://wa.me/?text=${msg}`, "_blank");
     }
 
