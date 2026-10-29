@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#f59e0b" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <title>Radar SEACE — Inteligencia en Contrataciones</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -21,7 +22,7 @@
 </head>
 <body class="text-slate-900 pb-24 select-none">
 
-  <!-- BOTÓN FLOTANTE LATERAL "> MENÚ" (IDÉNTICO AL DISEÑO DE REFERENCIA) -->
+  <!-- BOTÓN FLOTANTE LATERAL "> MENÚ" -->
   <button onclick="toggleMenu(true)" class="fixed left-0 top-1/3 z-40 bg-slate-900 text-amber-400 border-y-2 border-r-2 border-amber-400 rounded-r-2xl px-2.5 py-3 shadow-lg flex flex-col items-center gap-0.5 active:scale-95 transition">
     <span class="text-lg font-extrabold leading-none">›</span>
     <span class="text-[10px] font-extrabold tracking-wider uppercase">MENÚ</span>
@@ -69,7 +70,7 @@
           <span class="bg-sky-500 text-white w-8 h-8 rounded-lg flex items-center justify-center font-extrabold">🏢</span>
           <div>
             <p>Mis Empresas / Perfiles</p>
-            <p class="text-[11px] font-normal text-slate-500">Crear o cambiar de empresa activa</p>
+            <p class="text-[11px] font-normal text-slate-500">Autocompletar con SUNAT o cambiar</p>
           </div>
         </button>
 
@@ -84,12 +85,12 @@
     </div>
 
     <div class="p-4 border-t border-slate-200 bg-slate-50 text-xs text-slate-500">
-      <p class="font-bold text-slate-700">Estado de Base de Datos:</p>
-      <p id="drawer-status-db" class="text-emerald-600 font-semibold mt-0.5">● Conectado a Supabase en vivo</p>
+      <p class="font-bold text-slate-700">Estado del Sistema:</p>
+      <p id="drawer-status-db" class="text-emerald-600 font-semibold mt-0.5">● Conectado a Supabase y SUNAT</p>
     </div>
   </aside>
 
-  <!-- ENCABEZADO CÁLIDO AMARILLO / NARANJA (ESTILO DE TU IMAGEN) -->
+  <!-- ENCABEZADO CÁLIDO AMARILLO / NARANJA -->
   <header class="bg-gradient-to-b from-amber-400 to-amber-500 text-slate-950 sticky top-0 z-30 shadow-md px-4 py-3.5 border-b-2 border-amber-600/20">
     <div class="max-w-md mx-auto">
       <div class="flex items-start justify-between gap-2">
@@ -102,7 +103,7 @@
           </p>
         </div>
 
-        <!-- 3 BOTONES CUADRADOS REDONDEADOS ESTILO IMAGEN -->
+        <!-- 3 BOTONES SUPERIORES REDONDEADOS -->
         <div class="flex items-center gap-2 shrink-0">
           <button onclick="irAVista('inicio')" title="Inicio" class="w-11 h-11 rounded-2xl bg-slate-900 border-2 border-white shadow-md flex items-center justify-center text-amber-400 active:scale-95 transition">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10.5L12 3l9 7.5V21a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1v-10.5z"/></svg>
@@ -122,7 +123,7 @@
         <select id="selector-empresa-global" onchange="cambiarEmpresaActiva(this.value)" class="w-full bg-transparent text-xs font-extrabold text-slate-950 focus:outline-none truncate">
           <option value="">Cargando empresas...</option>
         </select>
-        <button onclick="irAVista('perfiles')" class="bg-slate-900 text-amber-400 text-[10px] font-bold px-2.5 py-1 rounded-lg shrink-0">+ Nueva</button>
+        <button onclick="irANuevoPerfilDirecto()" class="bg-slate-900 text-amber-400 text-[10px] font-bold px-2.5 py-1 rounded-lg shrink-0">+ Nueva</button>
       </div>
     </div>
   </header>
@@ -134,7 +135,7 @@
     <div id="alerta-sistema" class="hidden bg-red-50 border-2 border-red-300 text-red-900 text-xs p-3 rounded-2xl"></div>
 
     <!-- =================================================================== -->
-    <!-- VISTA 1: INICIO (TARJETAS MODERNAS CÁLIDAS COMO EN TU IMAGEN)       -->
+    <!-- VISTA 1: INICIO (4 OPCIONES PRINCIPALES CON TARJETAS CÁLIDAS)       -->
     <!-- =================================================================== -->
     <section id="vista-inicio" class="space-y-4">
       <div class="text-center px-2 pt-2">
@@ -149,7 +150,7 @@
           <svg class="w-10 h-10 text-amber-950" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
         </div>
         <h3 class="text-xl font-extrabold text-slate-900">Oportunidades Para Mí</h3>
-        <p class="text-sm text-slate-600 mt-1">Ver procesos compatibles según el perfil de mi empresa</p>
+        <p class="text-sm text-slate-600 mt-1">Ver procesos vigentes que calzan con el perfil de mi empresa</p>
       </div>
 
       <!-- TARJETA 2: EXPLORAR Y FILTRAR SEACE -->
@@ -162,13 +163,13 @@
         <p class="text-sm text-slate-600 mt-1">Filtrar por montos, departamentos, rubros y contratos menores</p>
       </div>
 
-      <!-- TARJETA 3: MIS EMPRESAS / PERFILES -->
+      <!-- TARJETA 3: MIS EMPRESAS / PERFILES CON SUNAT -->
       <div onclick="irAVista('perfiles')" class="card-warm-blue rounded-3xl p-6 text-center shadow-sm cursor-pointer active:scale-[0.99] transition">
         <div class="w-20 h-20 mx-auto rounded-3xl bg-sky-500 flex items-center justify-center shadow-inner mb-4">
           <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
         </div>
-        <h3 class="text-xl font-extrabold text-slate-900">Perfiles de Empresas</h3>
-        <p class="text-sm text-slate-600 mt-1">Registrar uno o varios usuarios, experiencia, RNP y rubros</p>
+        <h3 class="text-xl font-extrabold text-slate-900">Perfiles de Empresas (SUNAT)</h3>
+        <p class="text-sm text-slate-600 mt-1">Registrar uno o varios RUC con carga automática desde SUNAT</p>
       </div>
 
       <!-- TARJETA 4: DATOS REALES Y SINCRONIZACIÓN -->
@@ -300,7 +301,7 @@
     </section>
 
     <!-- =================================================================== -->
-    <!-- VISTA 4: MIS EMPRESAS Y PERFILES (MULTIUSUARIO REAL)                -->
+    <!-- VISTA 4: MIS EMPRESAS Y PERFILES (MULTIUSUARIO + CONEXIÓN SUNAT)    -->
     <!-- =================================================================== -->
     <section id="vista-perfiles" class="hidden space-y-4">
       <!-- Lista de empresas registradas -->
@@ -308,7 +309,7 @@
         <div class="flex items-center justify-between">
           <div>
             <h2 class="font-extrabold text-base text-slate-900">🏢 Empresas / Usuarios Registrados</h2>
-            <p class="text-xs text-slate-600">Toca una empresa para activarla o crea una nueva</p>
+            <p class="text-xs text-slate-600">Toca una empresa para activarla o registra una nueva</p>
           </div>
           <button onclick="prepararNuevoPerfil()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-xs px-3 py-2 rounded-xl shadow-xs">
             + Nuevo Perfil
@@ -317,22 +318,37 @@
         <div id="lista-empresas-registradas" class="space-y-2"></div>
       </div>
 
-      <!-- Formulario Crear / Editar Empresa -->
-      <div class="bg-white rounded-3xl p-5 shadow-sm border-2 border-amber-300 space-y-3.5">
+      <!-- Formulario Crear / Editar Empresa con Autocompletado SUNAT -->
+      <div id="card-formulario-perfil" class="bg-white rounded-3xl p-5 shadow-sm border-2 border-amber-300 space-y-3.5">
         <div class="flex justify-between items-center border-b border-slate-100 pb-2">
           <h3 id="titulo-form-perfil" class="font-extrabold text-base text-slate-900">Editar Perfil de Empresa</h3>
           <span id="badge-modo-perfil" class="bg-amber-100 text-amber-900 text-[10px] font-extrabold px-2.5 py-1 rounded-full">EDITANDO</span>
         </div>
 
-        <div class="grid grid-cols-3 gap-2">
-          <div class="col-span-1">
-            <label class="text-xs font-bold text-slate-700">RUC (o DNI)</label>
-            <input id="perf-ruc" type="text" maxlength="11" placeholder="20..." class="w-full text-xs font-bold bg-amber-50/50 border-2 border-amber-200 rounded-xl p-2.5 mt-1" />
+        <!-- BLOQUE RUC CON AUTOCOMPLETADO AUTOMÁTICO SUNAT -->
+        <div class="space-y-2.5 bg-amber-50/60 p-3 rounded-2xl border border-amber-200">
+          <div class="grid grid-cols-12 gap-2 items-end">
+            <div class="col-span-5">
+              <label class="text-[11px] font-extrabold text-slate-800">RUC (11 dígitos)</label>
+              <input id="perf-ruc" type="text" maxlength="11" oninput="verificarLongitudRuc(this.value)" placeholder="Ej: 20601234567" class="w-full text-xs font-extrabold bg-white border-2 border-amber-400 rounded-xl p-2.5 mt-1 focus:outline-none focus:border-orange-500" />
+            </div>
+            <div class="col-span-3">
+              <button type="button" onclick="consultarRucSunat()" id="btn-sunat" class="w-full bg-slate-900 hover:bg-slate-800 text-amber-400 font-extrabold text-xs py-2.5 px-2 rounded-xl shadow-xs transition">
+                🔍 SUNAT
+              </button>
+            </div>
+            <div class="col-span-4">
+              <span id="badge-estado-sunat" class="block text-center text-[10px] font-extrabold py-2.5 px-2 rounded-xl bg-white text-slate-500 border border-slate-200 truncate">
+                Escribe 11 dígitos
+              </span>
+            </div>
           </div>
-          <div class="col-span-2">
-            <label class="text-xs font-bold text-slate-700">Nombre de Empresa o Consultor</label>
-            <input id="perf-razon" type="text" placeholder="Ej: ADJUDICA CONSULTORES S.A.C." class="w-full text-xs font-bold bg-amber-50/50 border-2 border-amber-200 rounded-xl p-2.5 mt-1" />
+
+          <div>
+            <label class="text-[11px] font-extrabold text-slate-800">Razón Social / Nombre (Autocompletado por SUNAT)</label>
+            <input id="perf-razon" type="text" placeholder="Se completará automáticamente al poner el RUC..." class="w-full text-xs font-extrabold bg-white border-2 border-amber-300 rounded-xl p-2.5 mt-1" />
           </div>
+          <p id="info-direccion-sunat" class="text-[11px] font-semibold text-emerald-800 hidden"></p>
         </div>
 
         <div>
@@ -444,7 +460,7 @@
       <!-- Opción 3: Limpiar procesos de prueba iniciales -->
       <div class="bg-red-50 rounded-3xl p-4 border-2 border-red-200 flex items-center justify-between gap-3">
         <div>
-          <h4 class="text-xs font-extrabold text-red-900">¿Deseas borrar los 8 procesos de demostración?</h4>
+          <h4 class="text-xs font-extrabold text-red-900">¿Deseas borrar los procesos de demostración?</h4>
           <p class="text-[11px] text-red-700">Limpia los procesos de ejemplo (CM-2026-001, etc.) de Supabase.</p>
         </div>
         <button onclick="eliminarProcesosDemo()" class="bg-red-600 text-white text-xs font-extrabold px-3 py-2 rounded-xl shrink-0">
@@ -458,7 +474,7 @@
   <!-- BARRA DE NAVEGACIÓN INFERIOR CÁLIDA -->
   <nav class="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 border-t-2 border-amber-600/30 z-30 shadow-lg">
     <div class="max-w-md mx-auto grid grid-cols-4 text-center">
-      <button onclick="irAVista('inicio')" id="nav-inicio" class="py-2.5 flex flex-col items-center text-slate-950 font-extrabold text-[11px]">
+      <button onclick="irAVista('inicio')" id="nav-inicio" class="py-2.5 flex flex-col items-center text-slate-950 font-extrabold text-[11px] bg-amber-300/60">
         <span class="text-base">🏠</span>
         <span>Inicio</span>
       </button>
@@ -484,6 +500,9 @@
     const SUPABASE_URL = "https://ggjhiwffoiftgfpgmmeu.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_Z4Ltm0PaOUmmoOdYyd4Nkw_DfCxG9ax";
     const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Si tienes un token gratuito opcional de apisperu.com, puedes colocarlo aquí:
+    const TOKEN_SUNAT_OPCIONAL = "";
 
     let todasLasEmpresas = [];
     let perfilActual = null;
@@ -535,6 +554,11 @@
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
+    function irANuevoPerfilDirecto() {
+      irAVista("perfiles");
+      prepararNuevoPerfil();
+    }
+
     // Semáforo de horas restantes
     function calcularSemaforo(fechaLimiteISO) {
       if (!fechaLimiteISO) return { color: "bg-emerald-100 text-emerald-900 border-emerald-300", texto: "En plazo", horas: 999 };
@@ -574,7 +598,7 @@
            </div>`
         : "";
 
-      const urlDoc = p.url_documento || (esMenor ? "https://prod6.seace.gob.pe/buscador-publico" : "https://prod2.seace.gob.pe/seacebus-uiwd-pub/buscadorPublico/buscadorPublico.xhtml");
+      const urlDoc = p.url_documento || (esMenor ? "https://prod6.seace.gob.pe/buscador-publico/contrataciones" : "https://prod2.seace.gob.pe/seacebus-uiwd-pub/buscadorPublico/buscadorPublico.xhtml");
       const textoWa = encodeURIComponent(
         `📌 *Oportunidad SEACE Detectada*\n` +
         `• *Proceso:* ${p.nomenclatura}\n` +
@@ -624,6 +648,95 @@
     }
 
     // =========================================================================
+    // CONEXIÓN AUTOMÁTICA CON PADRÓN PÚBLICO SUNAT POR RUC
+    // =========================================================================
+    function verificarLongitudRuc(valor) {
+      const limpio = valor.replace(/\D/g, "");
+      document.getElementById("perf-ruc").value = limpio;
+      if (limpio.length === 11) {
+        consultarRucSunat();
+      }
+    }
+
+    async function consultarRucSunat() {
+      const ruc = document.getElementById("perf-ruc").value.trim();
+      const btn = document.getElementById("btn-sunat");
+      const badge = document.getElementById("badge-estado-sunat");
+      const infoDir = document.getElementById("info-direccion-sunat");
+
+      if (ruc.length !== 11 || (!ruc.startsWith("10") && !ruc.startsWith("20") && !ruc.startsWith("15") && !ruc.startsWith("17"))) {
+        alert("Ingresa un número de RUC válido de 11 dígitos (iniciado en 10, 15, 17 o 20).");
+        return;
+      }
+
+      btn.innerText = "⏳...";
+      badge.className = "block text-center text-[10px] font-extrabold py-2.5 px-2 rounded-xl bg-amber-100 text-amber-900 border border-amber-300";
+      badge.innerText = "Consultando...";
+      infoDir.classList.add("hidden");
+
+      try {
+        let datos = null;
+
+        // Intento 1: Token de ApisPeru si fue configurado
+        if (TOKEN_SUNAT_OPCIONAL) {
+          try {
+            const r1 = await fetch(`https://dniruc.apisperu.com/api/v1/ruc/${ruc}?token=${TOKEN_SUNAT_OPCIONAL}`);
+            if (r1.ok) datos = await r1.json();
+          } catch (_) {}
+        }
+
+        // Intento 2: Puente público AllOrigins hacia API SUNAT Perú
+        if (!datos || (!datos.razonSocial && !datos.nombre)) {
+          try {
+            const urlPublica = encodeURIComponent(`https://api.apis.net.pe/v1/ruc?numero=${ruc}`);
+            const r2 = await fetch(`https://api.allorigins.win/raw?url=${urlPublica}`);
+            if (r2.ok) datos = await r2.json();
+          } catch (_) {}
+        }
+
+        // Intento 3: Segundo puente de respaldo CORSProxy
+        if (!datos || (!datos.razonSocial && !datos.nombre)) {
+          try {
+            const r3 = await fetch(`https://corsproxy.io/?${encodeURIComponent(`https://api.apis.net.pe/v1/ruc?numero=${ruc}`)}`);
+            if (r3.ok) datos = await r3.json();
+          } catch (_) {}
+        }
+
+        const razonSocial = (datos?.razonSocial || datos?.nombre || "").trim();
+        const estado = (datos?.estado || "ACTIVO").toUpperCase();
+        const condicion = (datos?.condicion || "HABIDO").toUpperCase();
+        const depto = (datos?.departamento || "").toUpperCase().trim();
+        const direccion = (datos?.direccion || "").trim();
+
+        if (!razonSocial) {
+          throw new Error("Servidor público ocupado");
+        }
+
+        // Llenar automáticamente los campos de la empresa
+        document.getElementById("perf-razon").value = razonSocial;
+        if (depto) {
+          document.getElementById("perf-deptos").value = depto === "LIMA" ? "LIMA, CALLAO" : depto;
+        }
+        if (direccion) {
+          infoDir.innerText = `📍 Domicilio SUNAT: ${direccion} (${depto || "PERÚ"})`;
+          infoDir.classList.remove("hidden");
+        }
+
+        const esValido = estado.includes("ACTIVO") && condicion.includes("HABIDO");
+        badge.className = esValido
+          ? "block text-center text-[10px] font-extrabold py-2.5 px-2 rounded-xl bg-emerald-100 text-emerald-900 border border-emerald-400"
+          : "block text-center text-[10px] font-extrabold py-2.5 px-2 rounded-xl bg-red-100 text-red-900 border border-red-400";
+        badge.innerText = `${estado} • ${condicion}`;
+
+      } catch (err) {
+        badge.className = "block text-center text-[10px] font-extrabold py-2.5 px-2 rounded-xl bg-amber-100 text-amber-900 border border-amber-300";
+        badge.innerText = "Completa nombre";
+      } finally {
+        btn.innerText = "🔍 SUNAT";
+      }
+    }
+
+    // =========================================================================
     // CARGA DE DATOS Y MULTIUSUARIO REAL DESDE SUPABASE
     // =========================================================================
     async function recargarDatos(idEmpresaPreferida = null) {
@@ -642,7 +755,7 @@
         todosLosProcesos = procData || [];
         document.getElementById("badge-inicio-total").innerText = `${todosLosProcesos.length} vigentes`;
 
-        // 2. Cargar TODAS las empresas/perfiles registrados (Multiusuario real)
+        // 2. Cargar TODAS las empresas/perfiles registrados
         const { data: perfData, error: perfErr } = await sb
           .from("perfiles_empresa")
           .select("*")
@@ -690,6 +803,7 @@
       if (!encontrada) return;
       localStorage.setItem("radar_seace_empresa_id", encontrada.id);
       await activarPerfilEnPantalla(encontrada);
+      renderSelectorEmpresas();
       renderListaEmpresas();
     }
 
@@ -707,7 +821,7 @@
     function renderListaEmpresas() {
       const cont = document.getElementById("lista-empresas-registradas");
       if (todasLasEmpresas.length === 0) {
-        cont.innerHTML = `<p class="text-xs text-slate-500 py-2">Aún no hay empresas registradas. Usa el formulario de abajo para crear la primera.</p>`;
+        cont.innerHTML = `<p class="text-xs text-slate-500 py-2">Aún no hay empresas registradas. Ingresa tu RUC abajo para crear la primera.</p>`;
         return;
       }
       cont.innerHTML = todasLasEmpresas.map(e => {
@@ -756,7 +870,7 @@
         contenedor.innerHTML = `
           <div class="bg-white rounded-3xl p-6 text-center border-2 border-amber-200 space-y-2">
             <p class="text-sm font-extrabold text-slate-800">No hay procesos vigentes que superen el 50% de compatibilidad con este perfil</p>
-            <p class="text-xs text-slate-600">Puedes ampliar tus palabras clave o departamentos en "Mis Empresas" o revisar todos los procesos en "Filtrar SEACE".</p>
+            <p class="text-xs text-slate-600">Puedes ampliar tus palabras clave o departamentos en "Empresas" o revisar todos los procesos en "Filtrar SEACE".</p>
           </div>`;
         return;
       }
@@ -825,6 +939,9 @@
     function prepararNuevoPerfil() {
       document.getElementById("titulo-form-perfil").innerText = "Registrar Nueva Empresa / Usuario";
       document.getElementById("badge-modo-perfil").innerText = "NUEVO REGISTRO";
+      document.getElementById("badge-estado-sunat").innerText = "Escribe 11 dígitos";
+      document.getElementById("badge-estado-sunat").className = "block text-center text-[10px] font-extrabold py-2.5 px-2 rounded-xl bg-white text-slate-500 border border-slate-200 truncate";
+      document.getElementById("info-direccion-sunat").classList.add("hidden");
       document.getElementById("perf-ruc").value = "";
       document.getElementById("perf-razon").value = "";
       document.getElementById("perf-exp").value = 150000;
@@ -838,6 +955,7 @@
       document.querySelectorAll(".chk-objeto").forEach(chk => {
         chk.checked = (chk.value === "BIENES" || chk.value === "SERVICIOS");
       });
+      document.getElementById("perf-ruc").focus();
     }
 
     function llenarFormularioPerfil(p) {
@@ -864,7 +982,7 @@
       const ruc = document.getElementById("perf-ruc").value.trim();
       const razon = document.getElementById("perf-razon").value.trim();
       if (!ruc || !razon) {
-        alert("Por favor ingresa el RUC (o DNI) y el Nombre de la Empresa.");
+        alert("Por favor ingresa el RUC y el Nombre de la Empresa.");
         return;
       }
 
@@ -949,7 +1067,6 @@
 
           const ahora = new Date();
           const lote = filas.map((f, idx) => {
-            // Reconoce columnas típicas de exportación del SEACE / CONOSCE / Contratos Menores
             const nomenclatura = f["Nomenclatura"] || f["NOMENCLATURA"] || f["N° Requerimiento"] || f["Codigo"] || f["Proceso"] || `SEACE-${Date.now()}-${idx}`;
             const entidad = f["Nombre o Sigla de la Entidad"] || f["Entidad"] || f["ENTIDAD"] || "ENTIDAD PUBLICA";
             const objetoRaw = (f["Objeto de Contratación"] || f["Objeto"] || f["OBJETO"] || "SERVICIOS").toString().toUpperCase();
@@ -978,7 +1095,7 @@
               fecha_publicacion: ahora.toISOString(),
               fecha_limite_oferta: new Date(ahora.getTime() + 4 * 86400000).toISOString(),
               estado: "VIGENTE",
-              url_documento: esMenor ? "https://prod6.seace.gob.pe/buscador-publico" : "https://prod2.seace.gob.pe/seacebus-uiwd-pub/buscadorPublico/buscadorPublico.xhtml"
+              url_documento: esMenor ? "https://prod6.seace.gob.pe/buscador-publico/contrataciones" : "https://prod2.seace.gob.pe/seacebus-uiwd-pub/buscadorPublico/buscadorPublico.xhtml"
             };
           });
 
