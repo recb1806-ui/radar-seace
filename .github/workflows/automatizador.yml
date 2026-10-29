@@ -1,0 +1,30 @@
+name: Robot Extractor SEACE
+
+on:
+  # Se ejecuta automáticamente a las 7am, 11am, 3pm y 7pm (Hora Perú / UTC-5)
+  schedule:
+    - cron: '0 12,16,20,0 * * *'
+  # Permite ejecutarlo manualmente con un clic cuando quieras probarlo
+  workflow_dispatch:
+
+jobs:
+  extraer-e-inyectar:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 1. Descargar código del repositorio
+        uses: actions/checkout@v4
+
+      - name: 2. Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 3. Instalar librerías necesarias
+        run: pip install supabase requests pandas
+
+      - name: 4. Ejecutar el Robot Extractor e Inyector
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+        run: python extractor_seace.py
