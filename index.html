@@ -1577,20 +1577,22 @@
     }
 
     // =========================================================================
-    // 10. DETECCIÓN DE APP INSTALADA EN MENÚ LATERAL Y COMPARTIR
+    // 10. DETECCIÓN EN TIEMPO REAL DE APP INSTALADA (PERMITE REINSTALAR)
     // =========================================================================
     let eventoInstalacionPWA = null;
+    let instaladaEnSesionActual = false;
 
-    function estaAppInstaladaEnDispositivo() {
-      const modoStandalone =
+    // Limpia cualquier bloqueo antiguo guardado en localStorage por versiones previas
+    localStorage.removeItem("pladicop_app_instalada");
+
+    function estaEjecutandoseComoAppInstalada() {
+      const enModoStandalone =
         window.matchMedia("(display-mode: standalone)").matches ||
-        window.navigator.standalone === true;
-      const yaMarcada = localStorage.getItem("pladicop_app_instalada") === "true";
+        window.matchMedia("(display-mode: fullscreen)").matches ||
+        window.navigator.standalone === true ||
+        document.referrer.includes("android-app://");
 
-      if (modoStandalone && !yaMarcada) {
-        localStorage.setItem("pladicop_app_instalada", "true");
-      }
-      return modoStandalone || yaMarcada;
+      return enModoStandalone || instaladaEnSesionActual;
     }
 
     function actualizarVistaInstalacionMenu() {
@@ -1599,12 +1601,14 @@
       const txtMensaje = document.getElementById("txt-drawer-instalar");
       if (!btnInstalar || !gridBotones) return;
 
-      if (estaAppInstaladaEnDispositivo()) {
+      if (estaEjecutandoseComoAppInstalada()) {
+        // Solo oculta "Instalar App" si realmente se está abriendo desde la App ya instalada
         btnInstalar.classList.add("hidden");
         gridBotones.classList.remove("grid-cols-2");
         gridBotones.classList.add("grid-cols-1");
         if (txtMensaje) txtMensaje.innerText = "Comparte la App con otros empresarios:";
       } else {
+        // Si se abre desde el navegador (o tras desinstalar una versión previa), muestra siempre "Instalar App"
         btnInstalar.classList.remove("hidden");
         gridBotones.classList.remove("grid-cols-1");
         gridBotones.classList.add("grid-cols-2");
@@ -1614,36 +1618,46 @@
 
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
-        navigator.serviceWorker.register("./sw.js").catch(() => {});
+        navigator.serviceWorker.register("./sw.js").then((reg) => {
+          reg.update().catch(() => {});
+        }).catch(() => {});
       });
     }
 
     window.addEventListener("beforeinstallprompt", (e) => {
       e.preventDefault();
       eventoInstalacionPWA = e;
+      instaladaEnSesionActual = false;
+      localStorage.removeItem("pladicop_app_instalada");
       actualizarVistaInstalacionMenu();
     });
 
     window.addEventListener("appinstalled", () => {
-      localStorage.setItem("pladicop_app_instalada", "true");
+      instaladaEnSesionActual = true;
       eventoInstalacionPWA = null;
       actualizarVistaInstalacionMenu();
     });
+
+    if (window.matchMedia) {
+      window.matchMedia("(display-mode: standalone)").addEventListener("change", () => {
+        actualizarVistaInstalacionMenu();
+      });
+    }
 
     async function instalarAppEnCelular() {
       if (eventoInstalacionPWA) {
         eventoInstalacionPWA.prompt();
         const resultado = await eventoInstalacionPWA.userChoice;
         if (resultado && resultado.outcome === "accepted") {
-          localStorage.setItem("pladicop_app_instalada", "true");
+          instaladaEnSesionActual = true;
           actualizarVistaInstalacionMenu();
         }
         eventoInstalacionPWA = null;
       } else {
         alert(
-          "📲 Para instalar la App en tu teléfono:\n\n" +
-          "• En Android (Chrome): Toca el menú de 3 puntos (⋮) arriba a la derecha y elige 'Instalar aplicación' o 'Agregar a la pantalla principal'.\n\n" +
-          "• En iPhone (Safari): Toca el botón 'Compartir' (cuadrado con flecha) y selecciona 'Agregar a inicio'."
+          "📲 Para instalar la nueva versión en tu teléfono:\n\n" +
+          "• En Android (Chrome): Toca el menú de 3 puntos (⋮) arriba a la derecha y selecciona 'Instalar aplicación' o 'Agregar a la pantalla principal'.\n\n" +
+          "• En iPhone (Safari): Toca el botón 'Compartir' (cuadrado con flecha) en la barra inferior y elige 'Agregar a inicio'."
         );
       }
     }
