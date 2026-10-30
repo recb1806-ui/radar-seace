@@ -637,8 +637,10 @@
       }
     }
 
-    const formatoSoles = (monto) => {
-      if (monto === null || monto === undefined || isNaN(monto)) return "Reservado";
+    const formatoSoles = (monto, origen = "") => {
+      if (origen === "VALOR_OCULTO" || monto === null || monto === undefined || isNaN(monto) || Number(monto) === 0) {
+        return "Valor Oculto";
+      }
       return "S/ " + Number(monto).toLocaleString("es-PE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     };
 
@@ -785,8 +787,9 @@
     }
 
     function etiquetaOrigenMonto(origen) {
+      if (origen === "VALOR_OCULTO") return "Reservado";
       if (origen === "ESTIMADO_PAC") return "Ref. PAC";
-      if (origen === "TOPE_8_UIT") return "Ref. ≤ 8 UIT";
+      if (origen === "TOPE_8_UIT") return "≤ 8 UIT";
       return "Cuantía Oficial";
     }
 
@@ -827,7 +830,7 @@
         `🏛️ *Entidad:* ${p.entidad}\n` +
         `📦 *Categoría:* ${p.objeto_contratacion} (${p.departamento})\n` +
         `📝 *Descripción:* ${p.descripcion}\n` +
-        `💰 *Monto Ref:* ${formatoSoles(p.monto_referencial)}\n` +
+        `💰 *Monto Ref:* ${formatoSoles(p.monto_referencial, p.origen_monto)}\n` +
         `🔗 *Portal:* ${urlPortal}`
       );
 
