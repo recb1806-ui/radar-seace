@@ -1,0 +1,26 @@
+{
+  "name": "Radar PLADICOP - Oportunidades del Estado",
+  "short_name": "Radar PLADICOP",
+  "description": "Radar en tiempo real de Contratos Menores y Procedimientos de Selección del Estado Peruano. Desarrollado por Vértice.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fcfaf2",
+  "theme_color": "#f59e0b",
+  "lang": "es-PE",
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
