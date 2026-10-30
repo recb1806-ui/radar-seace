@@ -7,6 +7,9 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <title>Radar PLADICOP - Oportunidades con el Estado</title>
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png" />
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -33,7 +36,7 @@
     📋 Código copiado. Pégalo en el buscador oficial.
   </div>
 
-  <!-- MODAL DE CLAVE DE ADMINISTRADOR (PUNTO 6: CLAVE POR DEFECTO "admin") -->
+  <!-- MODAL DE CLAVE DE ADMINISTRADOR (CLAVE POR DEFECTO: "admin") -->
   <div id="modal-admin" class="fixed inset-0 bg-slate-950/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-xs">
     <div class="bg-white rounded-3xl p-5 w-full max-w-xs border-2 border-amber-400 shadow-2xl space-y-3">
       <div class="flex justify-between items-center">
@@ -56,7 +59,7 @@
     <span class="text-[10px] font-extrabold tracking-wider uppercase" style="writing-mode: vertical-rl;">MENÚ</span>
   </button>
 
-  <!-- MENÚ LATERAL DESLIZABLE (CONFIGURACIÓN, NORMATIVIDAD, ADMIN Y VÉRTICE) -->
+  <!-- MENÚ LATERAL DESLIZABLE (CONFIGURACIÓN, NORMATIVIDAD, ADMIN Y CRÉDITOS VÉRTICE • RCB) -->
   <div id="drawer-overlay" onclick="toggleMenu(false)" class="fixed inset-0 bg-slate-950/50 z-40 hidden backdrop-blur-xs"></div>
   <aside id="drawer-menu" class="fixed top-0 left-0 bottom-0 w-76 max-w-[85vw] bg-white z-50 shadow-2xl transform -translate-x-full transition-transform duration-300 flex flex-col justify-between border-r-2 border-amber-300 overflow-y-auto">
     <div>
@@ -71,7 +74,7 @@
       </div>
 
       <div class="p-3.5 space-y-4">
-        <!-- PUNTO 9: CONFIGURACIÓN DE PLAZOS VIGENTES VS CERRADOS -->
+        <!-- CONFIGURACIÓN DE PLAZOS VIGENTES VS CERRADOS -->
         <div class="bg-amber-50/80 border border-amber-300 rounded-2xl p-3 space-y-2">
           <p class="text-[11px] font-extrabold text-slate-800 uppercase">Preferencia de Resultados</p>
           <label class="flex items-center justify-between gap-2 cursor-pointer">
@@ -83,7 +86,7 @@
           </p>
         </div>
 
-        <!-- PUNTO 8: APARTADO DE NORMATIVIDAD OFICIAL PARA DESCARGAR EN EL CELULAR -->
+        <!-- APARTADO DE NORMATIVIDAD OFICIAL PARA DESCARGAR EN EL CELULAR -->
         <div class="bg-sky-50/70 border border-sky-200 rounded-2xl p-3 space-y-2.5">
           <div class="flex items-center gap-1.5">
             <svg class="w-4 h-4 text-sky-700 shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
@@ -102,7 +105,20 @@
           </a>
         </div>
 
-        <!-- PUNTO 6: CARGA DE DATOS EN EL MENÚ FLOTANTE CON CLAVE "admin" -->
+        <!-- BOTÓN DE INSTALACIÓN Y COMPARTIR EN EL MENÚ LATERAL -->
+        <div class="bg-slate-100 border border-slate-200 rounded-2xl p-3 space-y-2">
+          <p class="text-[11px] font-extrabold text-slate-700 uppercase">Aplicación Móvil</p>
+          <div class="grid grid-cols-2 gap-2">
+            <button onclick="instalarAppEnCelular()" class="bg-amber-400 hover:bg-amber-500 text-slate-950 text-[11px] font-extrabold py-2 px-2 rounded-xl shadow-xs transition">
+              📲 Instalar App
+            </button>
+            <button onclick="compartirEnlaceInstalacion()" class="bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 text-[11px] font-extrabold py-2 px-2 rounded-xl transition">
+              🔗 Compartir
+            </button>
+          </div>
+        </div>
+
+        <!-- CARGA DE DATOS EN EL MENÚ FLOTANTE CON CLAVE "admin" -->
         <div class="pt-1 border-t border-slate-200">
           <button onclick="solicitarAccesoAdmin()" class="w-full flex items-center justify-between bg-slate-900 hover:bg-slate-800 text-amber-400 p-3 rounded-2xl text-xs font-extrabold transition shadow-xs">
             <span class="flex items-center gap-2">
@@ -115,7 +131,7 @@
       </div>
     </div>
 
-    <!-- PUNTO 1: CRÉDITOS DE DESARROLLADOR VÉRTICE + LINK OFICIAL DE YOUTUBE -->
+    <!-- CRÉDITOS DE DESARROLLADOR VÉRTICE + SELLO SUTIL RCB + LINK DE YOUTUBE -->
     <div class="p-4 border-t border-slate-200 bg-slate-50 space-y-2">
       <div class="flex items-center justify-between text-[11px]">
         <span class="font-bold text-slate-600">Estado de red:</span>
@@ -124,7 +140,10 @@
       <div class="bg-slate-900 text-white rounded-2xl p-3 flex items-center justify-between gap-2">
         <div>
           <p class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Desarrollado por</p>
-          <p class="text-xs font-extrabold text-amber-400">Vértice</p>
+          <div class="flex items-baseline gap-1.5">
+            <p class="text-xs font-extrabold text-amber-400">Vértice</p>
+            <span class="text-[9px] font-bold text-slate-500 tracking-widest uppercase">• RCB</span>
+          </div>
         </div>
         <a href="https://www.youtube.com/@vertice_estrategia" target="_blank" rel="noopener" class="bg-red-600 hover:bg-red-700 text-white text-[11px] font-extrabold px-3 py-1.5 rounded-xl flex items-center gap-1.5 shadow-xs transition">
           <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
@@ -134,7 +153,7 @@
     </div>
   </aside>
 
-  <!-- ENCABEZADO SUPERIOR LIMPIO (PUNTOS 2 y 7: SIN ÍCONOS REPETIDOS, WHATSAPP OFICIAL Y PERFIL ENCAJADO AL 100%) -->
+  <!-- ENCABEZADO SUPERIOR LIMPIO CON ÍCONO OFICIAL DE WHATSAPP Y PERFIL AJUSTADO AL CELULAR -->
   <header class="bg-gradient-to-b from-amber-400 to-amber-500 text-slate-950 sticky top-0 z-30 shadow-md px-3.5 py-3 border-b-2 border-amber-600/30 w-full">
     <div class="max-w-md mx-auto w-full overflow-hidden">
       <div class="flex items-center justify-between gap-2">
@@ -145,7 +164,7 @@
           </p>
         </div>
 
-        <!-- ÍCONO OFICIAL DE WHATSAPP (PUNTO 2: SIN REPETIR CASA NI LUPA) -->
+        <!-- ÍCONO OFICIAL DE WHATSAPP -->
         <button onclick="compartirResumenWhatsapp()" title="Compartir por WhatsApp" class="w-10 h-10 rounded-2xl bg-[#25D366] hover:bg-[#20bd5a] text-white border-2 border-white shadow-md flex items-center justify-center shrink-0 active:scale-95 transition">
           <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
             <path d="M12.031 2c-5.516 0-9.969 4.453-9.969 9.969 0 1.766.469 3.484 1.359 5.016L2 22l5.141-1.344c1.484.813 3.172 1.25 4.891 1.25 5.516 0 9.969-4.453 9.969-9.969S17.547 2 12.031 2zm5.828 14.125c-.25.703-1.453 1.344-2.016 1.422-.516.078-1.172.109-1.891-.125-.438-.141-1-.328-1.719-.641-3.031-1.313-5.016-4.375-5.172-4.578-.156-.203-1.234-1.641-1.234-3.125 0-1.484.781-2.219 1.063-2.531.281-.313.609-.391.813-.391.203 0 .406.016.578.016.188 0 .438-.078.688.531.25.609.844 2.063.922 2.219.078.156.125.328.031.531-.094.203-.156.328-.313.516-.156.172-.313.391-.453.531-.156.156-.313.328-.141.625.172.313.781 1.297 1.672 2.094 1.156 1.031 2.125 1.344 2.438 1.5.313.156.484.125.672-.078.188-.203.766-.891.969-1.203.203-.313.406-.25.688-.156.281.094 1.781.844 2.094 1 .313.156.516.234.594.359.078.125.078.734-.172 1.438z"/>
@@ -153,7 +172,7 @@
         </button>
       </div>
 
-      <!-- PUNTO 7: RECTÁNGULO DE PERFIL ACTIVO PERFECTAMENTE AJUSTADO AL ANCHO DEL CELULAR -->
+      <!-- RECTÁNGULO DE PERFIL ACTIVO ENCAJADO AL 100% EN PANTALLA MÓVIL -->
       <div class="mt-2.5 bg-amber-300/80 border border-amber-600/30 rounded-xl p-1.5 flex items-center gap-1.5 w-full overflow-hidden">
         <span class="text-[10px] font-extrabold text-slate-900 uppercase shrink-0 pl-1">Mi Perfil:</span>
         <select id="selector-empresa-global" onchange="cambiarEmpresaActiva(this.value)" class="min-w-0 flex-1 w-full bg-white text-slate-900 font-bold text-xs rounded-lg px-2 py-1.5 border border-amber-500 truncate focus:outline-none">
@@ -173,9 +192,30 @@
     <div id="alerta-sistema" class="hidden bg-red-50 border-2 border-red-300 text-red-900 rounded-2xl p-3 text-xs"></div>
 
     <!-- =================================================================== -->
-    <!-- VISTA 1: INICIO (3 OPCIONES PRINCIPALES CLARAS Y AMIGABLES)         -->
+    <!-- VISTA 1: INICIO (BANNER INSTALABLE + 3 OPCIONES PRINCIPALES)        -->
     <!-- =================================================================== -->
     <section id="vista-inicio" class="space-y-3.5">
+
+      <!-- BANNER DE INSTALACIÓN DIRECTA Y COMPARTIR APP -->
+      <div id="banner-instalar-app" class="bg-slate-900 text-white rounded-3xl p-3.5 shadow-md border-2 border-amber-400 flex items-center justify-between gap-2.5">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <img src="./icon-192.png" onerror="this.style.display='none'" alt="Logo" class="w-11 h-11 rounded-2xl border border-amber-400 shrink-0" />
+          <div class="min-w-0">
+            <span class="text-[9px] font-extrabold uppercase tracking-wider text-amber-400 block">App Oficial • Vértice</span>
+            <h3 class="text-xs font-extrabold truncate">Instala Radar PLADICOP</h3>
+            <p class="text-[10px] text-slate-300 leading-tight">Acceso directo en tu celular</p>
+          </div>
+        </div>
+        <div class="flex flex-col gap-1 shrink-0">
+          <button onclick="instalarAppEnCelular()" class="bg-amber-400 hover:bg-amber-500 text-slate-950 text-[11px] font-extrabold px-3 py-1.5 rounded-xl shadow active:scale-95 transition">
+            📲 Instalar
+          </button>
+          <button onclick="compartirEnlaceInstalacion()" class="bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-400/40 text-[10px] font-bold px-3 py-1 rounded-xl active:scale-95 transition">
+            🔗 Compartir
+          </button>
+        </div>
+      </div>
+
       <div class="text-center px-2 pt-1">
         <h2 class="text-xl font-extrabold text-slate-900 leading-tight">¿Qué oportunidades buscamos hoy?</h2>
         <p class="text-xs text-slate-600 mt-1">Selecciona una opción para encontrar contratos con el Estado de forma sencilla</p>
@@ -191,7 +231,7 @@
         <p class="text-xs text-slate-600 mt-1 leading-relaxed">Procesos recomendados automáticamente según la especialidad, experiencia y ubicación de tu empresa</p>
       </div>
 
-      <!-- TARJETA 2: BUSCAR Y FILTRAR EN PLADICOP (PUNTO 3) -->
+      <!-- TARJETA 2: BUSCAR Y FILTRAR EN PLADICOP -->
       <div onclick="irAVista('explorar')" class="card-warm-green rounded-3xl p-5 shadow-sm text-center relative cursor-pointer active:scale-98 transition">
         <span id="badge-inicio-total" class="absolute top-3.5 right-3.5 bg-emerald-600 text-white text-[11px] font-extrabold px-2.5 py-0.5 rounded-full">0 vigentes</span>
         <div class="w-14 h-14 mx-auto rounded-2xl bg-emerald-500 text-white flex items-center justify-center shadow-xs mb-3">
@@ -201,7 +241,7 @@
         <p class="text-xs text-slate-600 mt-1 leading-relaxed">Explora libremente Contratos Menores (≤ 8 UIT) y Procedimientos por rubro, monto, región y plazo</p>
       </div>
 
-      <!-- TARJETA 3: REGISTRAR EL PERFIL DE MI EMPRESA Y CONSULTAR PERFILES (PUNTO 4) -->
+      <!-- TARJETA 3: REGISTRAR EL PERFIL DE MI EMPRESA Y CONSULTAR PERFILES -->
       <div onclick="irAVista('perfiles')" class="card-warm-blue rounded-3xl p-5 shadow-sm text-center cursor-pointer active:scale-98 transition">
         <div class="w-14 h-14 mx-auto rounded-2xl bg-sky-500 text-white flex items-center justify-center shadow-xs mb-3">
           <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
@@ -210,10 +250,10 @@
         <p class="text-xs text-slate-600 mt-1 leading-relaxed">Configura tus rubros, capacidad de contratación y regiones de trabajo en este dispositivo</p>
       </div>
 
-      <!-- PIE DE PÁGINA VÉRTICE EN INICIO (PUNTO 1) -->
+      <!-- PIE DE PÁGINA VÉRTICE + SELLO SUTIL RCB EN INICIO -->
       <div class="pt-2 text-center">
         <a href="https://www.youtube.com/@vertice_estrategia" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 text-[11px] font-bold text-slate-500 hover:text-slate-800">
-          <span>Desarrollado por <strong class="text-slate-800">Vértice</strong></span>
+          <span>Desarrollado por <strong class="text-slate-800">Vértice</strong> <span class="text-[9px] text-slate-400 font-semibold tracking-widest uppercase ml-0.5">RCB</span></span>
           <span>•</span>
           <span class="text-orange-600 underline">@vertice_estrategia</span>
         </a>
@@ -239,7 +279,7 @@
     </section>
 
     <!-- =================================================================== -->
-    <!-- VISTA 3: BUSCAR Y FILTRAR EN PLADICOP (PUNTOS 3 y 12)               -->
+    <!-- VISTA 3: BUSCAR Y FILTRAR EN PLADICOP                               -->
     <!-- =================================================================== -->
     <section id="vista-explorar" class="hidden space-y-3.5">
       <div class="card-warm-yellow rounded-3xl p-4 shadow-sm space-y-3">
@@ -308,7 +348,7 @@
             </select>
           </div>
 
-          <!-- PUNTO 12: RANGOS COMPLETOS DE PLAZO DE VENCIMIENTO (INCLUYENDO > 20 DÍAS) -->
+          <!-- RANGOS DE PLAZO DE VENCIMIENTO INCLUYENDO > 20 DÍAS -->
           <div>
             <label class="text-[11px] font-extrabold text-slate-700 uppercase">Plazo Restante</label>
             <select id="filtro-urgencia" onchange="renderExplorar()" class="w-full text-xs bg-white border-2 border-amber-300 rounded-xl p-2 mt-1 font-bold">
@@ -345,7 +385,7 @@
     </section>
 
     <!-- =================================================================== -->
-    <!-- VISTA 4: REGISTRAR PERFIL Y CONSULTAR MIS PERFILES (PUNTOS 4, 5, 13)-->
+    <!-- VISTA 4: REGISTRAR PERFIL Y CONSULTAR MIS PERFILES                  -->
     <!-- =================================================================== -->
     <section id="vista-perfiles" class="hidden space-y-4">
       <!-- Lista de empresas registradas en este dispositivo -->
@@ -433,7 +473,7 @@
           <input id="perf-ex" type="text" placeholder="Ej: limpieza, vehículos, combustible" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-xl p-2.5 mt-1 font-semibold" />
         </div>
 
-        <!-- PUNTO 13: COMBO PREDEFINIDO DE DEPARTAMENTOS + ETIQUETAS FÁCILES DE AGREGAR Y QUITAR -->
+        <!-- COMBO PREDEFINIDO DE DEPARTAMENTOS + ETIQUETAS FÁCILES DE AGREGAR Y QUITAR -->
         <div class="space-y-2 bg-slate-50 p-3 rounded-2xl border border-slate-200">
           <div class="flex items-center justify-between">
             <label class="text-xs font-bold text-slate-700">Departamentos donde trabajas</label>
@@ -474,7 +514,6 @@
             </select>
           </div>
 
-          <!-- Contenedor visual de departamentos seleccionados -->
           <div id="chips-departamentos" class="flex flex-wrap gap-1.5 pt-1"></div>
           <input id="perf-deptos" type="hidden" value="LIMA, CALLAO" />
         </div>
@@ -495,7 +534,7 @@
     </section>
 
     <!-- =================================================================== -->
-    <!-- VISTA 5: PANEL ADMINISTRADOR PROTEGIDO POR CLAVE (PUNTO 6)          -->
+    <!-- VISTA 5: PANEL ADMINISTRADOR PROTEGIDO POR CLAVE                    -->
     <!-- =================================================================== -->
     <section id="vista-sincronizar" class="hidden space-y-4">
       <div class="bg-slate-900 text-amber-400 rounded-3xl p-4 flex items-center justify-between">
@@ -562,7 +601,7 @@
   <!-- BARRA DE NAVEGACIÓN INFERIOR LIMPIA CON ICONOS VECTORIALES PROFESIONALES -->
   <nav class="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-amber-400 via-amber-400 to-yellow-500 border-t-2 border-amber-600/30 z-30 shadow-lg">
     <div class="max-w-md mx-auto grid grid-cols-4 text-center">
-      <button onclick="irAVista('inicio')" id="nav-inicio" class="py-2 flex flex-col items-center justify-center gap-0.5 text-slate-950 font-extrabold text-[11px]">
+      <button onclick="irAVista('inicio')" id="nav-inicio" class="py-2 flex flex-col items-center justify-center gap-0.5 text-slate-950 font-extrabold text-[11px] bg-amber-300/60">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10.5L12 3l9 7.5V21a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1v-10.5z"/></svg>
         <span>Inicio</span>
       </button>
@@ -598,16 +637,15 @@
     let ultimasOportunidadesMatch = [];
     let departamentosSeleccionados = ["LIMA", "CALLAO"];
 
-    // Punto 9: Por defecto SIEMPRE se ocultan los procesos con plazo cerrado (true)
+    // Por defecto SIEMPRE se ocultan los procesos con plazo cerrado (true)
     let ocultarPlazosCerrados = localStorage.getItem("pladicop_ocultar_cerrados") !== "false";
     document.getElementById("chk-ocultar-cerrados").checked = ocultarPlazosCerrados;
 
-    // Punto 5: Lista privada de IDs de perfiles creados en este dispositivo
+    // Lista privada de IDs de perfiles creados en este dispositivo
     function obtenerIdsPerfilesDeEsteDispositivo() {
       try {
         const guardado = JSON.parse(localStorage.getItem("pladicop_mis_perfiles_ids") || "[]");
         if (Array.isArray(guardado) && guardado.length > 0) return guardado;
-        // Migrar si tenía un perfil activo previo en este teléfono
         const unicoPrevio = localStorage.getItem("radar_seace_empresa_id");
         if (unicoPrevio) {
           localStorage.setItem("pladicop_mis_perfiles_ids", JSON.stringify([unicoPrevio]));
@@ -719,7 +757,7 @@
     }
 
     // =========================================================================
-    // 3. GESTIÓN DE COMBO Y ETIQUETAS DE DEPARTAMENTOS (PUNTO 13)
+    // 3. GESTIÓN DE COMBO Y ETIQUETAS DE DEPARTAMENTOS
     // =========================================================================
     function renderizarChipsDepartamentos() {
       const contenedor = document.getElementById("chips-departamentos");
@@ -766,7 +804,7 @@
     }
 
     // =========================================================================
-    // 4. SEMÁFORO DE PLAZOS Y VÍNCULO DIRECTO A PLADICOP / SEACE (PUNTOS 9, 10, 12)
+    // 4. SEMÁFORO DE PLAZOS Y VÍNCULO DIRECTO A PLADICOP / SEACE
     // =========================================================================
     function calcularSemaforo(fechaLimiteISO) {
       if (!fechaLimiteISO) return { color: "bg-emerald-100 text-emerald-900 border-emerald-300", texto: "Vigente", horas: 96, dias: 4 };
@@ -793,7 +831,7 @@
       return "Cuantía Oficial";
     }
 
-    // Punto 10: Copia el código exacto del proceso al portapapeles y abre el portal directo
+    // Copia el código exacto del proceso al portapapeles y abre el portal directo
     function abrirProcesoDirecto(nomenclatura, urlDestino) {
       if (navigator.clipboard && nomenclatura) {
         navigator.clipboard.writeText(nomenclatura).catch(() => {});
@@ -851,7 +889,7 @@
           <div class="bg-amber-50/70 border border-amber-200 rounded-2xl p-2.5 grid grid-cols-3 gap-1.5 text-center">
             <div class="min-w-0">
               <span class="block text-[10px] font-bold text-slate-500 truncate">Monto (${etiquetaOrigenMonto(p.origen_monto)})</span>
-              <span class="text-xs font-extrabold text-slate-900 truncate block">${formatoSoles(p.monto_referencial)}</span>
+              <span class="text-xs font-extrabold text-slate-900 truncate block">${formatoSoles(p.monto_referencial, p.origen_monto)}</span>
             </div>
             <div class="min-w-0">
               <span class="block text-[10px] font-bold text-slate-500">Categoría</span>
@@ -877,7 +915,7 @@
     }
 
     // =========================================================================
-    // 5. CONSULTA SILENCIOSA DE RUC AL COMPLETAR 11 DÍGITOS (PUNTO 4)
+    // 5. CONSULTA AUTOMÁTICA DE RUC AL COMPLETAR 11 DÍGITOS
     // =========================================================================
     function verificarLongitudRuc(valor) {
       const limpio = valor.replace(/\D/g, "");
@@ -961,14 +999,13 @@
     }
 
     // =========================================================================
-    // 6. CARGA DE PROCESOS Y PRIVACIDAD POR DISPOSITIVO (PUNTOS 5, 9, 11)
+    // 6. CARGA DE PROCESOS Y PRIVACIDAD POR DISPOSITIVO
     // =========================================================================
     async function recargarDatos(idEmpresaPreferida = null) {
       const alerta = document.getElementById("alerta-sistema");
       alerta.classList.add("hidden");
 
       try {
-        // 1. Obtener procesos vigentes de la base compartida
         const { data: procData, error: procErr } = await sb
           .from("procesos_seace")
           .select("*")
@@ -981,7 +1018,6 @@
         const vigentesEnFecha = todosLosProcesos.filter(p => calcularSemaforo(p.fecha_limite_oferta).horas > 0);
         document.getElementById("badge-inicio-total").innerText = `${vigentesEnFecha.length} vigentes`;
 
-        // 2. Punto 5: Cargar ÚNICAMENTE los perfiles creados en este dispositivo
         const idsDeEsteEquipo = obtenerIdsPerfilesDeEsteDispositivo();
         if (idsDeEsteEquipo.length > 0) {
           const { data: perfData, error: perfErr } = await sb
@@ -1028,7 +1064,7 @@
 
     async function activarPerfilEnPantalla(perfil) {
       perfilActual = perfil;
-      document.getElementById("tope-empresa-cabecera").innerText = formatoSoles(perfil.monto_maximo_interes);
+      document.getElementById("tope-empresa-cabecera").innerText = formatoSoles(perfil.monto_maximo_interes, "PUBLICADO");
       document.getElementById("drawer-empresa-actual").innerText = `${perfil.razon_social} (${perfil.ruc})`;
       document.getElementById("titulo-parati-empresa").innerText = `Para: ${perfil.razon_social}`;
       document.getElementById("resumen-parati-criterios").innerText =
@@ -1073,7 +1109,7 @@
                 <span class="text-xs font-extrabold text-slate-900 truncate">${e.razon_social}</span>
                 ${esActiva ? `<span class="bg-amber-500 text-slate-950 text-[9px] font-extrabold px-1.5 py-0.5 rounded-md shrink-0">ACTIVO</span>` : ""}
               </div>
-              <p class="text-[11px] text-slate-600 font-medium truncate">RUC: ${e.ruc} • Exp: ${formatoSoles(e.experiencia_acumulada_soles)}</p>
+              <p class="text-[11px] text-slate-600 font-medium truncate">RUC: ${e.ruc} • Exp: ${formatoSoles(e.experiencia_acumulada_soles, "PUBLICADO")}</p>
             </div>
             <button onclick="eliminarEmpresa('${e.id}', '${e.razon_social.replace(/'/g, "")}')" title="Quitar perfil" class="text-red-600 hover:bg-red-50 p-2 rounded-xl text-xs font-bold shrink-0">
               🗑️
@@ -1102,7 +1138,6 @@
         url_documento: mapaUrl[item.proceso_id]
       }));
 
-      // Punto 9: Si "Ocultar procesos con plazo cerrado" está activo (por defecto sí), filtrar cerrados
       if (ocultarPlazosCerrados) {
         lista = lista.filter(item => calcularSemaforo(item.fecha_limite_oferta).horas > 0);
       }
@@ -1124,7 +1159,7 @@
     }
 
     // =========================================================================
-    // 7. BUSCADOR MULTICRITERIO EN PLADICOP (PUNTOS 9 y 12)
+    // 7. BUSCADOR MULTICRITERIO EN PLADICOP
     // =========================================================================
     function limpiarFiltros() {
       document.getElementById("filtro-texto").value = "";
@@ -1150,17 +1185,19 @@
       const filtrados = todosLosProcesos.filter(p => {
         const sem = calcularSemaforo(p.fecha_limite_oferta);
 
-        // Punto 9: Omitir plazo cerrado por defecto salvo que el usuario lo desactive en el menú
         if (ocultarPlazosCerrados && sem.horas <= 0) return false;
-
         if (fuente !== "TODOS" && p.fuente !== fuente) return false;
         if (objeto !== "TODOS" && p.objeto_contratacion !== objeto) return false;
         if (depto !== "TODOS" && (p.departamento || "").toUpperCase() !== depto) return false;
 
         const montoProc = Number(p.monto_referencial || 0);
-        if (montoProc < montoMin || montoProc > montoMax) return false;
+        // Si tiene cuantía pública (> 0), evaluar el rango; si es Valor Oculto (0), permitirlo salvo que el usuario exija un monto mínimo
+        if (montoProc > 0) {
+          if (montoProc < montoMin || montoProc > montoMax) return false;
+        } else if (montoMin > 0) {
+          return false;
+        }
 
-        // Punto 12: Filtro ampliado de plazos incluyendo mayores a 20 días
         if (urgencia !== "TODOS") {
           if (sem.horas <= 0) return false;
           if (urgencia === "24H" && sem.horas > 24) return false;
@@ -1279,7 +1316,6 @@
         return;
       }
 
-      // Punto 5: Asociar este perfil exclusivamente con este dispositivo
       registrarIdPerfilEnEsteDispositivo(data.id);
 
       btn.innerText = "✅ ¡Perfil Guardado!";
@@ -1332,11 +1368,11 @@
 
             const descripcion = f["Descripción del Objeto"] || f["Descripcion"] || "Convocatoria pública vigente";
             const depto = String(f["Departamento"] || f["DEPARTAMENTO"] || "LIMA").toUpperCase().trim();
-            const montoRaw = f["Valor Referencial / Valor Estimado"] || f["Monto"] || "38500";
-            const monto = Number(String(montoRaw).replace(/[^0-9.]/g, "")) || 38500;
+            const montoRaw = String(f["Valor Referencial / Valor Estimado"] || f["VR / VE / Cuantía de la contratación"] || f["Monto"] || "");
+            const monto = Number(montoRaw.replace(/[^0-9.]/g, "")) || 0;
             const nomUp = String(nomenclatura).toUpperCase();
             const esMenor = nomUp.includes("REQ") || nomUp.includes("CM");
-            const diasPlazo = (nomUp.startsWith("LP-") || nomUp.startsWith("CP-")) ? 22 : (esMenor ? 3 : 8);
+            const diasPlazo = (nomUp.startsWith("LP-") || nomUp.startsWith("CP-") || nomUp.startsWith("CP ")) ? 23 : (esMenor ? 3 : 9);
 
             return {
               codigo_unico: `REAL-${String(nomenclatura).replace(/\s+/g, "-")}`,
@@ -1347,8 +1383,8 @@
               objeto_contratacion: objeto,
               descripcion: String(descripcion),
               monto_referencial: monto,
-              origen_monto: esMenor ? "TOPE_8_UIT" : "PUBLICADO",
-              experiencia_requerida_aprox: monto * 0.8,
+              origen_monto: monto > 0 ? "PUBLICADO" : "VALOR_OCULTO",
+              experiencia_requerida_aprox: monto > 0 ? monto * 0.8 : 0,
               fecha_publicacion: ahora.toISOString(),
               fecha_limite_oferta: new Date(ahora.getTime() + diasPlazo * 86400000).toISOString(),
               estado: "VIGENTE",
@@ -1382,7 +1418,7 @@
       const fuente = document.getElementById("nuevo-fuente").value;
       const objeto = document.getElementById("nuevo-objeto").value;
       const depto = (document.getElementById("nuevo-depto").value || "LIMA").toUpperCase().trim();
-      const monto = Number(document.getElementById("nuevo-monto").value || 35000);
+      const monto = Number(document.getElementById("nuevo-monto").value || 0);
       const dias = Number(document.getElementById("nuevo-dias").value || 5);
       const ahora = new Date();
 
@@ -1395,7 +1431,7 @@
         objeto_contratacion: objeto,
         descripcion: desc,
         monto_referencial: monto,
-        origen_monto: fuente === "CONTRATO_MENOR" ? "TOPE_8_UIT" : "PUBLICADO",
+        origen_monto: monto > 0 ? "PUBLICADO" : "VALOR_OCULTO",
         experiencia_requerida_aprox: monto,
         fecha_publicacion: ahora.toISOString(),
         fecha_limite_oferta: new Date(ahora.getTime() + dias * 86400000).toISOString(),
@@ -1431,12 +1467,58 @@
         `📊 *Radar PLADICOP - Oportunidades con el Estado*\n` +
         `Empresa: *${emp}*\n` +
         `Oportunidades compatibles hoy: *${ultimasOportunidadesMatch.length}*\n` +
-        `Desarrollado por Vértice: https://www.youtube.com/@vertice_estrategia`
+        `Desarrollado por Vértice • RCB: https://www.youtube.com/@vertice_estrategia`
       );
       window.open(`https://wa.me/?text=${msg}`, "_blank");
     }
 
-    // Supabase Realtime (WebSockets) para actualización automática
+    // =========================================================================
+    // 10. MOTOR DE INSTALACIÓN PWA, COMPARTIR ENLACE Y SUPABASE REALTIME
+    // =========================================================================
+    let eventoInstalacionPWA = null;
+
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js").catch(() => {});
+      });
+    }
+
+    window.addEventListener("beforeinstallprompt", (e) => {
+      e.preventDefault();
+      eventoInstalacionPWA = e;
+    });
+
+    window.addEventListener("appinstalled", () => {
+      const banner = document.getElementById("banner-instalar-app");
+      if (banner) banner.classList.add("hidden");
+    });
+
+    async function instalarAppEnCelular() {
+      if (eventoInstalacionPWA) {
+        eventoInstalacionPWA.prompt();
+        await eventoInstalacionPWA.userChoice;
+        eventoInstalacionPWA = null;
+      } else {
+        alert(
+          "📲 Para instalar la App en tu teléfono:\n\n" +
+          "• En Android (Chrome): Toca el menú de 3 puntos (⋮) arriba a la derecha y elige 'Instalar aplicación' o 'Agregar a la pantalla principal'.\n\n" +
+          "• En iPhone (Safari): Toca el botón 'Compartir' (cuadrado con flecha) y selecciona 'Agregar a inicio'."
+        );
+      }
+    }
+
+    async function compartirEnlaceInstalacion() {
+      const urlOficial = "https://recb1806-ui.github.io/radar-seace/";
+      const texto = "🚀 Instala gratis la App *Radar PLADICOP* (Desarrollada por Vértice • RCB) para consultar y filtrar en tiempo real Contratos Menores (≤ 8 UIT) y Procedimientos de Selección del Estado:";
+      if (navigator.share) {
+        try {
+          await navigator.share({ title: "Radar PLADICOP - Vértice", text: texto, url: urlOficial });
+          return;
+        } catch (_) {}
+      }
+      window.open(`https://wa.me/?text=${encodeURIComponent(texto + "\n" + urlOficial)}`, "_blank");
+    }
+
     sb.channel("canal-procesos-pladicop")
       .on(
         "postgres_changes",
