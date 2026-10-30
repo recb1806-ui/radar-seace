@@ -6,14 +6,20 @@
   <meta name="theme-color" content="#f59e0b" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <title>Radar SEACE - Inteligencia en Contrataciones</title>
+  <title>Radar PLADICOP - Oportunidades con el Estado</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- Librería SheetJS para importar reportes Excel/CSV reales del SEACE -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
-    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #fcfaf2; }
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    * { box-sizing: border-box; }
+    html, body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #fcfaf2;
+      overflow-x: hidden;
+      width: 100%;
+      max-width: 100vw;
+    }
     .card-warm-yellow { background-color: #fffdf4; border: 2px solid #fcd34d; }
     .card-warm-green  { background-color: #f2fdf7; border: 2px solid #86efac; }
     .card-warm-blue   { background-color: #f0f9ff; border: 2px solid #7dd3fc; }
@@ -22,172 +28,210 @@
 </head>
 <body class="text-slate-900 pb-24 select-none">
 
+  <!-- NOTIFICACIÓN FLOTANTE (TOAST) AL COPIAR CÓDIGO DE PROCESO -->
+  <div id="toast-copiado" class="fixed top-16 left-1/2 -translate-x-1/2 z-50 hidden bg-slate-900 text-amber-400 text-xs font-extrabold px-4 py-2.5 rounded-2xl shadow-xl border border-amber-400 text-center w-11/12 max-w-xs">
+    📋 Código copiado. Pégalo en el buscador oficial.
+  </div>
+
+  <!-- MODAL DE CLAVE DE ADMINISTRADOR (PUNTO 6: CLAVE POR DEFECTO "admin") -->
+  <div id="modal-admin" class="fixed inset-0 bg-slate-950/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-xs">
+    <div class="bg-white rounded-3xl p-5 w-full max-w-xs border-2 border-amber-400 shadow-2xl space-y-3">
+      <div class="flex justify-between items-center">
+        <h3 class="text-sm font-extrabold text-slate-900">🔒 Acceso Administrador</h3>
+        <button onclick="cerrarModalAdmin()" class="text-slate-400 hover:text-slate-700 font-extrabold text-sm">✕</button>
+      </div>
+      <p class="text-xs text-slate-600">Ingresa la clave para acceder a la carga y mantenimiento manual de la base de datos:</p>
+      <input id="input-clave-admin" type="password" placeholder="Clave de acceso..." class="w-full text-xs font-bold bg-amber-50 border-2 border-amber-300 rounded-xl p-2.5 focus:outline-none focus:border-amber-500" onkeydown="if(event.key==='Enter') verificarClaveAdmin()" />
+      <p id="error-clave-admin" class="text-[11px] font-bold text-red-600 hidden">Clave incorrecta. Intenta nuevamente.</p>
+      <div class="grid grid-cols-2 gap-2 pt-1">
+        <button onclick="cerrarModalAdmin()" class="bg-slate-100 text-slate-700 text-xs font-extrabold py-2.5 rounded-xl">Cancelar</button>
+        <button onclick="verificarClaveAdmin()" class="bg-slate-900 text-amber-400 text-xs font-extrabold py-2.5 rounded-xl">Ingresar</button>
+      </div>
+    </div>
+  </div>
+
   <!-- BOTÓN FLOTANTE LATERAL "> MENÚ" -->
   <button onclick="toggleMenu(true)" class="fixed left-0 top-1/3 z-40 bg-slate-900 text-amber-400 border-2 border-l-0 border-amber-400 rounded-r-2xl py-3 px-2 shadow-lg flex flex-col items-center gap-1 active:scale-95 transition">
     <span class="text-lg font-extrabold leading-none">&gt;</span>
     <span class="text-[10px] font-extrabold tracking-wider uppercase" style="writing-mode: vertical-rl;">MENÚ</span>
   </button>
 
-  <!-- MENÚ LATERAL DESLIZABLE (DRAWER COMPLETO) -->
+  <!-- MENÚ LATERAL DESLIZABLE (CONFIGURACIÓN, NORMATIVIDAD, ADMIN Y VÉRTICE) -->
   <div id="drawer-overlay" onclick="toggleMenu(false)" class="fixed inset-0 bg-slate-950/50 z-40 hidden backdrop-blur-xs"></div>
-  <aside id="drawer-menu" class="fixed top-0 left-0 bottom-0 w-72 bg-white z-50 shadow-2xl transform -translate-x-full transition-transform duration-300 flex flex-col justify-between border-r-2 border-amber-300">
+  <aside id="drawer-menu" class="fixed top-0 left-0 bottom-0 w-76 max-w-[85vw] bg-white z-50 shadow-2xl transform -translate-x-full transition-transform duration-300 flex flex-col justify-between border-r-2 border-amber-300 overflow-y-auto">
     <div>
-      <div class="bg-gradient-to-r from-amber-400 to-yellow-500 p-5 border-b border-amber-500">
+      <!-- Cabecera del Menú Lateral -->
+      <div class="bg-gradient-to-r from-amber-400 to-yellow-500 p-4 border-b border-amber-500">
         <div class="flex justify-between items-center">
-          <span class="bg-slate-900 text-amber-400 text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase">Radar SEACE</span>
+          <span class="bg-slate-900 text-amber-400 text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase">Panel de Opciones</span>
           <button onclick="toggleMenu(false)" class="bg-slate-900/10 hover:bg-slate-900/20 text-slate-900 font-extrabold w-8 h-8 rounded-full">✕</button>
         </div>
-        <h2 class="text-xl font-extrabold text-slate-900 mt-3">Menú Principal</h2>
-        <p id="drawer-empresa-actual" class="text-xs font-semibold text-slate-800 truncate mt-0.5">Cargando...</p>
+        <h2 class="text-lg font-extrabold text-slate-900 mt-2">Configuración y Ayuda</h2>
+        <p id="drawer-empresa-actual" class="text-xs font-semibold text-slate-800 truncate mt-0.5">Sin perfil activo</p>
       </div>
 
-      <nav class="p-3 space-y-1.5 text-xs font-extrabold text-slate-800">
-        <button onclick="irAVista('inicio')" class="w-full flex items-center gap-3 p-3 rounded-2xl hover:bg-amber-50 text-left transition">
-          <span class="bg-amber-400 text-slate-900 w-8 h-8 rounded-lg flex items-center justify-center text-base">🏠</span>
-          <div>
-            <p>Inicio</p>
-            <p class="text-[11px] font-normal text-slate-500">Panel de las 4 opciones</p>
-          </div>
-        </button>
-
-        <button onclick="irAVista('parati')" class="w-full flex items-center gap-3 p-3 rounded-2xl hover:bg-amber-50 text-left transition">
-          <span class="bg-orange-400 text-white w-8 h-8 rounded-lg flex items-center justify-center text-base">🎯</span>
-          <div>
-            <p>Oportunidades Para Mí</p>
-            <p class="text-[11px] font-normal text-slate-500">Procesos según el perfil activo</p>
-          </div>
-        </button>
-
-        <button onclick="irAVista('explorar')" class="w-full flex items-center gap-3 p-3 rounded-2xl hover:bg-amber-50 text-left transition">
-          <span class="bg-emerald-500 text-white w-8 h-8 rounded-lg flex items-center justify-center text-base">🔎</span>
-          <div>
-            <p>Explorar y Filtrar SEACE</p>
-            <p class="text-[11px] font-normal text-slate-500">Buscador multicriterio completo</p>
-          </div>
-        </button>
-
-        <button onclick="irAVista('perfiles')" class="w-full flex items-center gap-3 p-3 rounded-2xl hover:bg-amber-50 text-left transition">
-          <span class="bg-sky-500 text-white w-8 h-8 rounded-lg flex items-center justify-center text-base">🏢</span>
-          <div>
-            <p>Mis Empresas / Perfiles</p>
-            <p class="text-[11px] font-normal text-slate-500">Autocompletar con SUNAT</p>
-          </div>
-        </button>
-
-        <button onclick="irAVista('sincronizar')" class="w-full flex items-center gap-3 p-3 rounded-2xl hover:bg-amber-50 text-left transition">
-          <span class="bg-purple-600 text-white w-8 h-8 rounded-lg flex items-center justify-center text-base">📥</span>
-          <div>
-            <p>Datos Reales SEACE</p>
-            <p class="text-[11px] font-normal text-slate-500">Importar Excel/CSV o limpiar</p>
-          </div>
-        </button>
-      </nav>
-    </div>
-
-    <div class="p-4 border-t border-slate-200 bg-slate-50 text-xs text-slate-500">
-      <p class="font-bold text-slate-700">Estado del Sistema:</p>
-      <p id="drawer-status-db" class="text-emerald-600 font-semibold mt-0.5">● Conectado a Supabase y SUNAT</p>
-    </div>
-  </aside>
-
-  <!-- ENCABEZADO CÁLIDO AMARILLO / NARANJA -->
-  <header class="bg-gradient-to-b from-amber-400 to-amber-500 text-slate-950 sticky top-0 z-30 shadow-md px-4 py-3 border-b-2 border-amber-600/30">
-    <div class="max-w-md mx-auto">
-      <div class="flex items-start justify-between gap-2">
-        <div class="pl-2">
-          <h1 id="titulo-cabecera" class="font-extrabold text-2xl tracking-tight leading-none">Inicio</h1>
-          <p class="text-xs font-bold text-slate-900/80 mt-1 leading-snug">
-            <span id="fecha-cabecera">Octubre 2026</span> • Empresa:
-            <span id="nombre-empresa-cabecera" class="underline decoration-slate-900/50">Cargando...</span>
-            • Tope: <span id="tope-empresa-cabecera">S/ 0.00</span>
+      <div class="p-3.5 space-y-4">
+        <!-- PUNTO 9: CONFIGURACIÓN DE PLAZOS VIGENTES VS CERRADOS -->
+        <div class="bg-amber-50/80 border border-amber-300 rounded-2xl p-3 space-y-2">
+          <p class="text-[11px] font-extrabold text-slate-800 uppercase">Preferencia de Resultados</p>
+          <label class="flex items-center justify-between gap-2 cursor-pointer">
+            <span class="text-xs font-bold text-slate-700 leading-snug">Ocultar procesos con plazo cerrado</span>
+            <input id="chk-ocultar-cerrados" type="checkbox" checked onchange="cambiarPreferenciaPlazos(this.checked)" class="accent-amber-500 w-4 h-4 shrink-0" />
+          </label>
+          <p class="text-[10px] text-slate-500 leading-tight">
+            Por defecto solo ves convocatorias vigentes dentro de fecha para cotizar o presentar oferta.
           </p>
         </div>
 
-        <!-- 3 BOTONES SUPERIORES REDONDEADOS -->
-        <div class="flex items-center gap-1.5 shrink-0">
-          <button onclick="irAVista('inicio')" title="Inicio" class="w-10 h-10 rounded-xl bg-slate-900 text-white border-2 border-white shadow flex items-center justify-center active:scale-95">
-            🏠
-          </button>
-          <button onclick="irAVista('explorar')" title="Filtrar Procesos" class="w-10 h-10 rounded-xl bg-slate-900 text-white border-2 border-white shadow flex items-center justify-center active:scale-95">
-            🔎
-          </button>
-          <button onclick="compartirResumenWhatsapp()" title="WhatsApp" class="w-10 h-10 rounded-xl bg-emerald-600 text-white border-2 border-white shadow flex items-center justify-center active:scale-95">
-            📲
+        <!-- PUNTO 8: APARTADO DE NORMATIVIDAD OFICIAL PARA DESCARGAR EN EL CELULAR -->
+        <div class="bg-sky-50/70 border border-sky-200 rounded-2xl p-3 space-y-2.5">
+          <div class="flex items-center gap-1.5">
+            <svg class="w-4 h-4 text-sky-700 shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+            <p class="text-[11px] font-extrabold text-sky-950 uppercase">Normatividad Vigente (OECE)</p>
+          </div>
+          <p class="text-[11px] text-slate-600 leading-snug">Descarga en tu celular las normas oficiales de contrataciones públicas:</p>
+
+          <a href="https://www.gob.pe/institucion/oece/informes-publicaciones/6782940-tablero-normativo-de-contrataciones-publicas" target="_blank" rel="noopener" class="flex items-center justify-between bg-white hover:bg-sky-100/60 border border-sky-300 rounded-xl p-2.5 text-xs font-extrabold text-slate-800 transition">
+            <span>📋 Tablero Normativo OECE</span>
+            <span class="text-sky-600 text-[11px]">Abrir ↗</span>
+          </a>
+
+          <a href="https://www.gob.pe/institucion/oece/informes-publicaciones/6444155-ley-n-32069-ley-general-de-contrataciones-publicas-y-modificatorias" target="_blank" rel="noopener" class="flex items-center justify-between bg-white hover:bg-sky-100/60 border border-sky-300 rounded-xl p-2.5 text-xs font-extrabold text-slate-800 transition">
+            <span>⚖️ Ley N° 32069 y Reglamento</span>
+            <span class="text-sky-600 text-[11px]">Abrir ↗</span>
+          </a>
+        </div>
+
+        <!-- PUNTO 6: CARGA DE DATOS EN EL MENÚ FLOTANTE CON CLAVE "admin" -->
+        <div class="pt-1 border-t border-slate-200">
+          <button onclick="solicitarAccesoAdmin()" class="w-full flex items-center justify-between bg-slate-900 hover:bg-slate-800 text-amber-400 p-3 rounded-2xl text-xs font-extrabold transition shadow-xs">
+            <span class="flex items-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+              <span>Administrar Base de Datos</span>
+            </span>
+            <span class="text-[10px] bg-amber-400/20 text-amber-300 px-2 py-0.5 rounded-md">Admin</span>
           </button>
         </div>
       </div>
+    </div>
 
-      <!-- SELECTOR RÁPIDO DE EMPRESA / USUARIO ACTIVO -->
-      <div class="mt-2.5 bg-amber-300/70 border border-amber-600/30 rounded-xl p-1.5 flex items-center justify-between gap-2">
-        <span class="text-[11px] font-extrabold text-slate-900 uppercase shrink-0 pl-1.5">Perfil Activo:</span>
-        <select id="selector-empresa-global" onchange="cambiarEmpresaActiva(this.value)" class="flex-1 bg-white text-slate-900 font-bold text-xs rounded-lg px-2 py-1.5 border border-amber-500 focus:outline-none">
-          <option value="">Cargando empresas...</option>
+    <!-- PUNTO 1: CRÉDITOS DE DESARROLLADOR VÉRTICE + LINK OFICIAL DE YOUTUBE -->
+    <div class="p-4 border-t border-slate-200 bg-slate-50 space-y-2">
+      <div class="flex items-center justify-between text-[11px]">
+        <span class="font-bold text-slate-600">Estado de red:</span>
+        <span id="drawer-status-db" class="text-emerald-600 font-extrabold">● En línea</span>
+      </div>
+      <div class="bg-slate-900 text-white rounded-2xl p-3 flex items-center justify-between gap-2">
+        <div>
+          <p class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Desarrollado por</p>
+          <p class="text-xs font-extrabold text-amber-400">Vértice</p>
+        </div>
+        <a href="https://www.youtube.com/@vertice_estrategia" target="_blank" rel="noopener" class="bg-red-600 hover:bg-red-700 text-white text-[11px] font-extrabold px-3 py-1.5 rounded-xl flex items-center gap-1.5 shadow-xs transition">
+          <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+          <span>@vertice_estrategia</span>
+        </a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ENCABEZADO SUPERIOR LIMPIO (PUNTOS 2 y 7: SIN ÍCONOS REPETIDOS, WHATSAPP OFICIAL Y PERFIL ENCAJADO AL 100%) -->
+  <header class="bg-gradient-to-b from-amber-400 to-amber-500 text-slate-950 sticky top-0 z-30 shadow-md px-3.5 py-3 border-b-2 border-amber-600/30 w-full">
+    <div class="max-w-md mx-auto w-full overflow-hidden">
+      <div class="flex items-center justify-between gap-2">
+        <div class="min-w-0 flex-1 pl-1">
+          <h1 id="titulo-cabecera" class="font-extrabold text-xl tracking-tight leading-none truncate">Oportunidades del Estado</h1>
+          <p class="text-[11px] font-bold text-slate-900/85 mt-1 truncate">
+            Tope de interés: <span id="tope-empresa-cabecera" class="font-extrabold">S/ 0.00</span>
+          </p>
+        </div>
+
+        <!-- ÍCONO OFICIAL DE WHATSAPP (PUNTO 2: SIN REPETIR CASA NI LUPA) -->
+        <button onclick="compartirResumenWhatsapp()" title="Compartir por WhatsApp" class="w-10 h-10 rounded-2xl bg-[#25D366] hover:bg-[#20bd5a] text-white border-2 border-white shadow-md flex items-center justify-center shrink-0 active:scale-95 transition">
+          <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+            <path d="M12.031 2c-5.516 0-9.969 4.453-9.969 9.969 0 1.766.469 3.484 1.359 5.016L2 22l5.141-1.344c1.484.813 3.172 1.25 4.891 1.25 5.516 0 9.969-4.453 9.969-9.969S17.547 2 12.031 2zm5.828 14.125c-.25.703-1.453 1.344-2.016 1.422-.516.078-1.172.109-1.891-.125-.438-.141-1-.328-1.719-.641-3.031-1.313-5.016-4.375-5.172-4.578-.156-.203-1.234-1.641-1.234-3.125 0-1.484.781-2.219 1.063-2.531.281-.313.609-.391.813-.391.203 0 .406.016.578.016.188 0 .438-.078.688.531.25.609.844 2.063.922 2.219.078.156.125.328.031.531-.094.203-.156.328-.313.516-.156.172-.313.391-.453.531-.156.156-.313.328-.141.625.172.313.781 1.297 1.672 2.094 1.156 1.031 2.125 1.344 2.438 1.5.313.156.484.125.672-.078.188-.203.766-.891.969-1.203.203-.313.406-.25.688-.156.281.094 1.781.844 2.094 1 .313.156.516.234.594.359.078.125.078.734-.172 1.438z"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- PUNTO 7: RECTÁNGULO DE PERFIL ACTIVO PERFECTAMENTE AJUSTADO AL ANCHO DEL CELULAR -->
+      <div class="mt-2.5 bg-amber-300/80 border border-amber-600/30 rounded-xl p-1.5 flex items-center gap-1.5 w-full overflow-hidden">
+        <span class="text-[10px] font-extrabold text-slate-900 uppercase shrink-0 pl-1">Mi Perfil:</span>
+        <select id="selector-empresa-global" onchange="cambiarEmpresaActiva(this.value)" class="min-w-0 flex-1 w-full bg-white text-slate-900 font-bold text-xs rounded-lg px-2 py-1.5 border border-amber-500 truncate focus:outline-none">
+          <option value="">Registra tu empresa aquí →</option>
         </select>
-        <button onclick="irANuevoPerfilDirecto()" class="bg-slate-900 text-amber-400 text-[11px] font-extrabold px-2.5 py-1.5 rounded-lg shrink-0">
-          + RUC
+        <button onclick="irANuevoPerfilDirecto()" class="bg-slate-900 text-amber-400 text-[11px] font-extrabold px-2.5 py-1.5 rounded-lg shrink-0 active:scale-95">
+          + Nuevo
         </button>
       </div>
     </div>
   </header>
 
-  <!-- CONTENEDOR PRINCIPAL -->
-  <main class="max-w-md mx-auto p-4 pl-6 space-y-5">
+  <!-- CONTENEDOR PRINCIPAL AJUSTADO PARA PANTALLA DE CELULAR ESTÁNDAR -->
+  <main class="max-w-md mx-auto p-3.5 pl-5 space-y-4 w-full overflow-hidden">
 
     <!-- ALERTA SISTEMA -->
     <div id="alerta-sistema" class="hidden bg-red-50 border-2 border-red-300 text-red-900 rounded-2xl p-3 text-xs"></div>
 
     <!-- =================================================================== -->
-    <!-- VISTA 1: INICIO (4 OPCIONES PRINCIPALES CON TARJETAS CÁLIDAS)       -->
+    <!-- VISTA 1: INICIO (3 OPCIONES PRINCIPALES CLARAS Y AMIGABLES)         -->
     <!-- =================================================================== -->
-    <section id="vista-inicio" class="space-y-4">
-      <div class="text-center px-2 pt-2">
-        <h2 class="text-2xl font-extrabold text-slate-900 leading-tight">¿Qué deseas hacer hoy en el SEACE?</h2>
-        <p class="text-sm text-slate-600 mt-1">Toca una de las 4 opciones principales para empezar</p>
+    <section id="vista-inicio" class="space-y-3.5">
+      <div class="text-center px-2 pt-1">
+        <h2 class="text-xl font-extrabold text-slate-900 leading-tight">¿Qué oportunidades buscamos hoy?</h2>
+        <p class="text-xs text-slate-600 mt-1">Selecciona una opción para encontrar contratos con el Estado de forma sencilla</p>
       </div>
 
       <!-- TARJETA 1: OPORTUNIDADES PARA MÍ -->
       <div onclick="irAVista('parati')" class="card-warm-yellow rounded-3xl p-5 shadow-sm text-center relative cursor-pointer active:scale-98 transition">
-        <span id="badge-inicio-match" class="absolute top-4 right-4 bg-amber-500 text-slate-950 text-[11px] font-extrabold px-2.5 py-0.5 rounded-full">0 compat.</span>
-        <div class="w-16 h-16 mx-auto rounded-2xl bg-amber-400 flex items-center justify-center text-3xl shadow-xs mb-3">🎯</div>
-        <h3 class="text-xl font-extrabold text-slate-900">Oportunidades Para Mí</h3>
-        <p class="text-sm text-slate-600 mt-1">Ver procesos vigentes que calzan con tu RNP, experiencia y rubros</p>
+        <span id="badge-inicio-match" class="absolute top-3.5 right-3.5 bg-amber-500 text-slate-950 text-[11px] font-extrabold px-2.5 py-0.5 rounded-full">0 para ti</span>
+        <div class="w-14 h-14 mx-auto rounded-2xl bg-amber-400 text-slate-950 flex items-center justify-center shadow-xs mb-3">
+          <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </div>
+        <h3 class="text-lg font-extrabold text-slate-900">Oportunidades Para Mí</h3>
+        <p class="text-xs text-slate-600 mt-1 leading-relaxed">Procesos recomendados automáticamente según la especialidad, experiencia y ubicación de tu empresa</p>
       </div>
 
-      <!-- TARJETA 2: EXPLORAR Y FILTRAR SEACE -->
+      <!-- TARJETA 2: BUSCAR Y FILTRAR EN PLADICOP (PUNTO 3) -->
       <div onclick="irAVista('explorar')" class="card-warm-green rounded-3xl p-5 shadow-sm text-center relative cursor-pointer active:scale-98 transition">
-        <span id="badge-inicio-total" class="absolute top-4 right-4 bg-emerald-600 text-white text-[11px] font-extrabold px-2.5 py-0.5 rounded-full">0 vigentes</span>
-        <div class="w-16 h-16 mx-auto rounded-2xl bg-emerald-500 flex items-center justify-center text-3xl text-white shadow-xs mb-3">🔎</div>
-        <h3 class="text-xl font-extrabold text-slate-900">Buscar y Filtrar en SEACE</h3>
-        <p class="text-sm text-slate-600 mt-1">Filtrar por montos, departamentos, Contratos Menores o Procedimientos</p>
+        <span id="badge-inicio-total" class="absolute top-3.5 right-3.5 bg-emerald-600 text-white text-[11px] font-extrabold px-2.5 py-0.5 rounded-full">0 vigentes</span>
+        <div class="w-14 h-14 mx-auto rounded-2xl bg-emerald-500 text-white flex items-center justify-center shadow-xs mb-3">
+          <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
+        </div>
+        <h3 class="text-lg font-extrabold text-slate-900">Buscar y Filtrar en PLADICOP</h3>
+        <p class="text-xs text-slate-600 mt-1 leading-relaxed">Explora libremente Contratos Menores (≤ 8 UIT) y Procedimientos por rubro, monto, región y plazo</p>
       </div>
 
-      <!-- TARJETA 3: MIS EMPRESAS / PERFILES CON SUNAT -->
+      <!-- TARJETA 3: REGISTRAR EL PERFIL DE MI EMPRESA Y CONSULTAR PERFILES (PUNTO 4) -->
       <div onclick="irAVista('perfiles')" class="card-warm-blue rounded-3xl p-5 shadow-sm text-center cursor-pointer active:scale-98 transition">
-        <div class="w-16 h-16 mx-auto rounded-2xl bg-sky-500 flex items-center justify-center text-3xl text-white shadow-xs mb-3">🏢</div>
-        <h3 class="text-xl font-extrabold text-slate-900">Perfiles de Empresas (SUNAT)</h3>
-        <p class="text-sm text-slate-600 mt-1">Registrar uno o varios RUC con autocompletado directo de SUNAT</p>
+        <div class="w-14 h-14 mx-auto rounded-2xl bg-sky-500 text-white flex items-center justify-center shadow-xs mb-3">
+          <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+        </div>
+        <h3 class="text-lg font-extrabold text-slate-900">Registrar el perfil de mi empresa y consultar perfiles</h3>
+        <p class="text-xs text-slate-600 mt-1 leading-relaxed">Configura tus rubros, capacidad de contratación y regiones de trabajo en este dispositivo</p>
       </div>
 
-      <!-- TARJETA 4: DATOS REALES Y SINCRONIZACIÓN -->
-      <div onclick="irAVista('sincronizar')" class="card-warm-orange rounded-3xl p-5 shadow-sm text-center cursor-pointer active:scale-98 transition">
-        <div class="w-16 h-16 mx-auto rounded-2xl bg-orange-500 flex items-center justify-center text-3xl text-white shadow-xs mb-3">📥</div>
-        <h3 class="text-xl font-extrabold text-slate-900">Cargar Datos del SEACE</h3>
-        <p class="text-sm text-slate-600 mt-1">Subir reporte Excel/CSV del SEACE o administrar procesos</p>
+      <!-- PIE DE PÁGINA VÉRTICE EN INICIO (PUNTO 1) -->
+      <div class="pt-2 text-center">
+        <a href="https://www.youtube.com/@vertice_estrategia" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 text-[11px] font-bold text-slate-500 hover:text-slate-800">
+          <span>Desarrollado por <strong class="text-slate-800">Vértice</strong></span>
+          <span>•</span>
+          <span class="text-orange-600 underline">@vertice_estrategia</span>
+        </a>
       </div>
     </section>
 
     <!-- =================================================================== -->
     <!-- VISTA 2: OPORTUNIDADES PARA MÍ (MATCH SEGÚN PERFIL ACTIVO)          -->
     <!-- =================================================================== -->
-    <section id="vista-parati" class="hidden space-y-4">
+    <section id="vista-parati" class="hidden space-y-3.5">
       <div class="bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 rounded-3xl p-4 shadow">
         <div class="flex justify-between items-start gap-2">
-          <div>
-            <span class="text-[10px] font-extrabold uppercase tracking-wider bg-white/40 px-2.5 py-0.5 rounded-full">Motor Inteligente</span>
-            <h2 id="titulo-parati-empresa" class="text-lg font-extrabold mt-1">Para: Mi Empresa</h2>
-            <p id="resumen-parati-criterios" class="text-xs font-semibold text-slate-900/80 mt-0.5">Cargando criterios...</p>
+          <div class="min-w-0 flex-1">
+            <span class="text-[10px] font-extrabold uppercase tracking-wider bg-white/40 px-2.5 py-0.5 rounded-full">Recomendación Inteligente</span>
+            <h2 id="titulo-parati-empresa" class="text-base font-extrabold mt-1 truncate">Para: Mi Empresa</h2>
+            <p id="resumen-parati-criterios" class="text-xs font-semibold text-slate-900/85 mt-0.5 line-clamp-2">Configura tu empresa para ver oportunidades compatibles.</p>
           </div>
-          <span id="contador-match" class="bg-slate-900 text-amber-400 font-extrabold text-sm px-3 py-1.5 rounded-2xl">0</span>
+          <span id="contador-match" class="bg-slate-900 text-amber-400 font-extrabold text-sm px-3 py-1.5 rounded-2xl shrink-0">0</span>
         </div>
       </div>
 
@@ -195,34 +239,34 @@
     </section>
 
     <!-- =================================================================== -->
-    <!-- VISTA 3: EXPLORAR Y FILTRAR SEACE (BUSCADOR MULTICRITERIO COMPLETO) -->
+    <!-- VISTA 3: BUSCAR Y FILTRAR EN PLADICOP (PUNTOS 3 y 12)               -->
     <!-- =================================================================== -->
-    <section id="vista-explorar" class="hidden space-y-4">
+    <section id="vista-explorar" class="hidden space-y-3.5">
       <div class="card-warm-yellow rounded-3xl p-4 shadow-sm space-y-3">
         <div class="flex items-center justify-between">
-          <h2 class="font-extrabold text-base text-slate-900">🔎 Filtros de Búsqueda SEACE</h2>
+          <h2 class="font-extrabold text-base text-slate-900">Buscador PLADICOP</h2>
           <button onclick="limpiarFiltros()" class="text-xs font-bold text-orange-700 underline">Limpiar filtros</button>
         </div>
 
         <!-- Palabra clave -->
         <div>
-          <label class="text-[11px] font-extrabold text-slate-700 uppercase">¿Qué rubro o palabra buscas?</label>
-          <input id="filtro-texto" type="text" oninput="renderExplorar()" placeholder="Ej: inventario, climatización, mobiliario, consultoría..." class="w-full text-xs bg-white border-2 border-amber-300 rounded-xl px-3 py-2.5 mt-1 font-semibold focus:outline-none focus:border-amber-500" />
+          <label class="text-[11px] font-extrabold text-slate-700 uppercase">¿Qué producto, servicio o entidad buscas?</label>
+          <input id="filtro-texto" type="text" oninput="renderExplorar()" placeholder="Ej: mantenimiento, mobiliario, consultoría, vigilancia..." class="w-full text-xs bg-white border-2 border-amber-300 rounded-xl px-3 py-2.5 mt-1 font-semibold focus:outline-none focus:border-amber-500" />
         </div>
 
-        <div class="grid grid-cols-2 gap-2.5">
+        <div class="grid grid-cols-2 gap-2">
           <div>
-            <label class="text-[11px] font-extrabold text-slate-700 uppercase">Modalidad</label>
+            <label class="text-[11px] font-extrabold text-slate-700 uppercase">Tipo de Compra</label>
             <select id="filtro-fuente" onchange="renderExplorar()" class="w-full text-xs bg-white border-2 border-amber-300 rounded-xl p-2 mt-1 font-bold">
-              <option value="TODOS">Todas las modalidades</option>
+              <option value="TODOS">Todas</option>
               <option value="CONTRATO_MENOR">Contratos Menores (≤ 8 UIT)</option>
-              <option value="PROCEDIMIENTO_SELECCION">Procedimientos de Selección</option>
+              <option value="PROCEDIMIENTO_SELECCION">Procedimientos Selección</option>
             </select>
           </div>
           <div>
-            <label class="text-[11px] font-extrabold text-slate-700 uppercase">Objeto RNP</label>
+            <label class="text-[11px] font-extrabold text-slate-700 uppercase">Categoría (RNP)</label>
             <select id="filtro-objeto" onchange="renderExplorar()" class="w-full text-xs bg-white border-2 border-amber-300 rounded-xl p-2 mt-1 font-bold">
-              <option value="TODOS">Todos los objetos</option>
+              <option value="TODOS">Todas</option>
               <option value="BIENES">Bienes</option>
               <option value="SERVICIOS">Servicios</option>
               <option value="CONSULTORIA DE OBRAS">Consultoría de Obras</option>
@@ -231,7 +275,7 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-2.5">
+        <div class="grid grid-cols-2 gap-2">
           <div>
             <label class="text-[11px] font-extrabold text-slate-700 uppercase">Departamento</label>
             <select id="filtro-depto" onchange="renderExplorar()" class="w-full text-xs bg-white border-2 border-amber-300 rounded-xl p-2 mt-1 font-bold">
@@ -263,18 +307,24 @@
               <option value="UCAYALI">UCAYALI</option>
             </select>
           </div>
+
+          <!-- PUNTO 12: RANGOS COMPLETOS DE PLAZO DE VENCIMIENTO (INCLUYENDO > 20 DÍAS) -->
           <div>
-            <label class="text-[11px] font-extrabold text-slate-700 uppercase">Plazo de Vencimiento</label>
+            <label class="text-[11px] font-extrabold text-slate-700 uppercase">Plazo Restante</label>
             <select id="filtro-urgencia" onchange="renderExplorar()" class="w-full text-xs bg-white border-2 border-amber-300 rounded-xl p-2 mt-1 font-bold">
-              <option value="TODOS">Cualquier plazo</option>
-              <option value="24H">Vence en menos de 24h</option>
-              <option value="72H">Vence en 3 días o menos</option>
+              <option value="TODOS">Todos los plazos vigentes</option>
+              <option value="24H">Urgente: Hasta 24 horas</option>
+              <option value="3D">Hasta 3 días</option>
+              <option value="7D">Hasta 7 días</option>
+              <option value="15D">De 8 a 15 días</option>
+              <option value="20D">De 16 a 20 días</option>
+              <option value="MAS_20D">Más de 20 días</option>
             </select>
           </div>
         </div>
 
         <!-- Rango de Montos Mínimo y Máximo -->
-        <div class="grid grid-cols-2 gap-2.5 pt-1">
+        <div class="grid grid-cols-2 gap-2 pt-0.5">
           <div>
             <label class="text-[11px] font-extrabold text-slate-700 uppercase">Monto Mínimo (S/)</label>
             <input id="filtro-monto-min" type="number" oninput="renderExplorar()" placeholder="0" class="w-full text-xs bg-white border-2 border-amber-300 rounded-xl p-2 mt-1 font-bold" />
@@ -286,7 +336,7 @@
         </div>
 
         <div class="bg-amber-100/80 rounded-xl px-3 py-2 flex justify-between items-center text-xs font-extrabold text-slate-800">
-          <span>Resultados encontrados:</span>
+          <span>Procesos encontrados:</span>
           <span id="contador-explorar" class="bg-amber-500 text-slate-950 px-2.5 py-0.5 rounded-lg">0</span>
         </div>
       </div>
@@ -295,70 +345,65 @@
     </section>
 
     <!-- =================================================================== -->
-    <!-- VISTA 4: MIS EMPRESAS Y PERFILES (MULTIUSUARIO + CONEXIÓN SUNAT)    -->
+    <!-- VISTA 4: REGISTRAR PERFIL Y CONSULTAR MIS PERFILES (PUNTOS 4, 5, 13)-->
     <!-- =================================================================== -->
     <section id="vista-perfiles" class="hidden space-y-4">
-      <!-- Lista de empresas registradas -->
+      <!-- Lista de empresas registradas en este dispositivo -->
       <div class="card-warm-blue rounded-3xl p-4 space-y-3">
-        <div class="flex items-center justify-between">
-          <div>
-            <h2 class="font-extrabold text-base text-slate-900">🏢 Empresas Registradas</h2>
-            <p class="text-xs text-slate-600">Toca una empresa para activarla o edita sus datos abajo</p>
+        <div class="flex items-center justify-between gap-2">
+          <div class="min-w-0">
+            <h2 class="font-extrabold text-sm text-slate-900">Mis Perfiles en este Equipo</h2>
+            <p class="text-[11px] text-slate-600">Solo tú puedes ver los perfiles creados en tu celular</p>
           </div>
-          <button onclick="prepararNuevoPerfil()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-xs px-3 py-2 rounded-xl shadow-xs">
+          <button onclick="prepararNuevoPerfil()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-xs px-3 py-2 rounded-xl shadow-xs shrink-0">
             + Nuevo Perfil
           </button>
         </div>
         <div id="lista-empresas-registradas" class="space-y-2"></div>
       </div>
 
-      <!-- Formulario Crear / Editar Empresa con Autocompletado SUNAT -->
-      <div id="card-formulario-perfil" class="bg-white rounded-3xl p-5 shadow-sm border-2 border-amber-300 space-y-3.5">
-        <div class="flex justify-between items-center border-b border-slate-100 pb-2.5">
-          <h3 id="titulo-form-perfil" class="font-extrabold text-base text-slate-900">Registrar Nueva Empresa</h3>
-          <span id="badge-modo-perfil" class="bg-amber-100 text-amber-900 text-[10px] font-extrabold px-2.5 py-1 rounded-full">NUEVO REGISTRO</span>
+      <!-- Formulario de Registro / Edición de Perfil -->
+      <div id="card-formulario-perfil" class="bg-white rounded-3xl p-4 shadow-sm border-2 border-amber-300 space-y-3.5">
+        <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+          <h3 id="titulo-form-perfil" class="font-extrabold text-sm text-slate-900">Registrar el Perfil de mi Empresa</h3>
+          <span id="badge-modo-perfil" class="bg-amber-100 text-amber-900 text-[10px] font-extrabold px-2.5 py-1 rounded-full">NUEVO</span>
         </div>
 
-        <!-- BLOQUE RUC CON AUTOCOMPLETADO AUTOMÁTICO SUNAT -->
+        <!-- Campo RUC y Nombre de la Empresa -->
         <div class="space-y-2.5 bg-amber-50/60 p-3 rounded-2xl border border-amber-200">
           <div class="grid grid-cols-12 gap-2 items-end">
+            <div class="col-span-7">
+              <label class="text-[11px] font-extrabold text-slate-800">Número de RUC (11 dígitos)</label>
+              <input id="perf-ruc" type="text" inputmode="numeric" maxlength="11" oninput="verificarLongitudRuc(this.value)" placeholder="Ej: 20601234567" class="w-full text-xs bg-white border-2 border-amber-300 rounded-xl p-2.5 mt-1 font-extrabold" />
+            </div>
             <div class="col-span-5">
-              <label class="text-[11px] font-extrabold text-slate-800">RUC (11 dígitos)</label>
-              <input id="perf-ruc" type="text" maxlength="11" oninput="verificarLongitudRuc(this.value)" placeholder="2060..." class="w-full text-xs bg-white border-2 border-amber-300 rounded-xl p-2.5 mt-1 font-extrabold" />
-            </div>
-            <div class="col-span-3">
-              <button type="button" onclick="consultarRucSunat()" id="btn-sunat" class="w-full bg-slate-900 text-amber-400 font-extrabold text-xs py-2.5 px-2 rounded-xl shadow active:scale-95">
-                🔍 SUNAT
-              </button>
-            </div>
-            <div class="col-span-4">
-              <span id="badge-estado-sunat" class="block text-center text-[10px] font-extrabold py-2.5 px-2 rounded-xl bg-slate-100 text-slate-500 border border-slate-200">
-                Escribe 11 dígitos
+              <span id="badge-estado-sunat" class="block text-center text-[10px] font-extrabold py-2.5 px-2 rounded-xl bg-slate-100 text-slate-500 border border-slate-200 truncate">
+                Ingresa tu RUC
               </span>
             </div>
           </div>
 
           <div>
-            <label class="text-[11px] font-extrabold text-slate-800">Razón Social / Nombre (Autocompletado por SUNAT)</label>
-            <input id="perf-razon" type="text" placeholder="Se completará automáticamente al poner el RUC..." class="w-full text-xs bg-white border-2 border-amber-300 rounded-xl p-2.5 mt-1 font-bold" />
+            <label class="text-[11px] font-extrabold text-slate-800">Nombre o Razón Social de la Empresa</label>
+            <input id="perf-razon" type="text" placeholder="Nombre de tu empresa o negocio..." class="w-full text-xs bg-white border-2 border-amber-300 rounded-xl p-2.5 mt-1 font-bold" />
           </div>
           <p id="info-direccion-sunat" class="text-[11px] font-semibold text-emerald-800 hidden"></p>
         </div>
 
         <div>
-          <label class="text-xs font-bold text-slate-700">Objetos con RNP vigente</label>
+          <label class="text-xs font-bold text-slate-700">¿Qué vendes o qué servicios brindas? (RNP)</label>
           <div class="grid grid-cols-2 gap-2 mt-1.5 text-xs font-bold">
             <label class="flex items-center gap-2 bg-amber-50/60 p-2.5 rounded-xl border border-amber-200">
-              <input type="checkbox" value="BIENES" class="chk-objeto accent-amber-500" checked /> Bienes
+              <input type="checkbox" value="BIENES" class="chk-objeto accent-amber-500" checked /> Bienes / Productos
             </label>
             <label class="flex items-center gap-2 bg-amber-50/60 p-2.5 rounded-xl border border-amber-200">
-              <input type="checkbox" value="SERVICIOS" class="chk-objeto accent-amber-500" checked /> Servicios
+              <input type="checkbox" value="SERVICIOS" class="chk-objeto accent-amber-500" checked /> Servicios en general
             </label>
             <label class="flex items-center gap-2 bg-amber-50/60 p-2.5 rounded-xl border border-amber-200">
-              <input type="checkbox" value="CONSULTORIA DE OBRAS" class="chk-objeto accent-amber-500" /> Consultoría Obras
+              <input type="checkbox" value="CONSULTORIA DE OBRAS" class="chk-objeto accent-amber-500" /> Consultoría de Obras
             </label>
             <label class="flex items-center gap-2 bg-amber-50/60 p-2.5 rounded-xl border border-amber-200">
-              <input type="checkbox" value="OBRAS" class="chk-objeto accent-amber-500" /> Ejecución Obras
+              <input type="checkbox" value="OBRAS" class="chk-objeto accent-amber-500" /> Ejecución de Obras
             </label>
           </div>
         </div>
@@ -366,31 +411,72 @@
         <div class="grid grid-cols-3 gap-2">
           <div>
             <label class="text-[11px] font-bold text-slate-700">Experiencia (S/)</label>
-            <input id="perf-exp" type="number" placeholder="200000" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-xl p-2.5 mt-1 font-bold" />
+            <input id="perf-exp" type="number" placeholder="150000" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-xl p-2 mt-1 font-bold" />
           </div>
           <div>
             <label class="text-[11px] font-bold text-slate-700">Monto Mín (S/)</label>
-            <input id="perf-min" type="number" placeholder="5000" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-xl p-2.5 mt-1 font-bold" />
+            <input id="perf-min" type="number" placeholder="5000" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-xl p-2 mt-1 font-bold" />
           </div>
           <div>
             <label class="text-[11px] font-bold text-slate-700">Monto Máx (S/)</label>
-            <input id="perf-max" type="number" placeholder="500000" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-xl p-2.5 mt-1 font-bold" />
+            <input id="perf-max" type="number" placeholder="500000" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-xl p-2 mt-1 font-bold" />
           </div>
         </div>
 
         <div>
-          <label class="text-xs font-bold text-slate-700">Mis Rubros / Palabras Clave (separadas por coma)</label>
-          <textarea id="perf-kw" rows="2" placeholder="abastecimiento, contrataciones, inventario, archivo, mantenimiento, climatizacion" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-xl p-2.5 mt-1 font-semibold"></textarea>
+          <label class="text-xs font-bold text-slate-700">Palabras clave de tu negocio (separadas por coma)</label>
+          <textarea id="perf-kw" rows="2" placeholder="Ej: mantenimiento, aire acondicionado, mobiliario, contabilidad, sistemas" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-xl p-2.5 mt-1 font-semibold"></textarea>
         </div>
 
         <div>
-          <label class="text-xs font-bold text-slate-700">Palabras a Excluir (separadas por coma)</label>
-          <input id="perf-ex" type="text" placeholder="limpieza, seguridad, medico" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-xl p-2.5 mt-1 font-semibold" />
+          <label class="text-xs font-bold text-slate-700">Palabras que NO te interesan (opcional)</label>
+          <input id="perf-ex" type="text" placeholder="Ej: limpieza, vehículos, combustible" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-xl p-2.5 mt-1 font-semibold" />
         </div>
 
-        <div>
-          <label class="text-xs font-bold text-slate-700">Departamentos de interés (separados por coma o TODOS)</label>
-          <input id="perf-deptos" type="text" placeholder="LIMA, CALLAO, LAMBAYEQUE" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-xl p-2.5 mt-1 font-bold" />
+        <!-- PUNTO 13: COMBO PREDEFINIDO DE DEPARTAMENTOS + ETIQUETAS FÁCILES DE AGREGAR Y QUITAR -->
+        <div class="space-y-2 bg-slate-50 p-3 rounded-2xl border border-slate-200">
+          <div class="flex items-center justify-between">
+            <label class="text-xs font-bold text-slate-700">Departamentos donde trabajas</label>
+            <button type="button" onclick="seleccionarTodosLosDepartamentos()" class="text-[11px] font-extrabold text-amber-700 bg-amber-100 hover:bg-amber-200 px-2 py-0.5 rounded-lg transition">
+              🌎 Todo el Perú
+            </button>
+          </div>
+
+          <div class="flex gap-2">
+            <select id="combo-depto-perfil" onchange="agregarDepartamentoDesdeCombo(this.value)" class="flex-1 text-xs bg-white border-2 border-amber-300 rounded-xl p-2 font-bold">
+              <option value="">+ Elige un departamento para agregar...</option>
+              <option value="TODOS">🌎 TODOS LOS DEPARTAMENTOS (Nivel Nacional)</option>
+              <option value="AMAZONAS">AMAZONAS</option>
+              <option value="ANCASH">ANCASH</option>
+              <option value="APURIMAC">APURIMAC</option>
+              <option value="AREQUIPA">AREQUIPA</option>
+              <option value="AYACUCHO">AYACUCHO</option>
+              <option value="CAJAMARCA">CAJAMARCA</option>
+              <option value="CALLAO">CALLAO</option>
+              <option value="CUSCO">CUSCO</option>
+              <option value="HUANCAVELICA">HUANCAVELICA</option>
+              <option value="HUANUCO">HUANUCO</option>
+              <option value="ICA">ICA</option>
+              <option value="JUNIN">JUNIN</option>
+              <option value="LA LIBERTAD">LA LIBERTAD</option>
+              <option value="LAMBAYEQUE">LAMBAYEQUE</option>
+              <option value="LIMA">LIMA</option>
+              <option value="LORETO">LORETO</option>
+              <option value="MADRE DE DIOS">MADRE DE DIOS</option>
+              <option value="MOQUEGUA">MOQUEGUA</option>
+              <option value="PASCO">PASCO</option>
+              <option value="PIURA">PIURA</option>
+              <option value="PUNO">PUNO</option>
+              <option value="SAN MARTIN">SAN MARTIN</option>
+              <option value="TACNA">TACNA</option>
+              <option value="TUMBES">TUMBES</option>
+              <option value="UCAYALI">UCAYALI</option>
+            </select>
+          </div>
+
+          <!-- Contenedor visual de departamentos seleccionados -->
+          <div id="chips-departamentos" class="flex flex-wrap gap-1.5 pt-1"></div>
+          <input id="perf-deptos" type="hidden" value="LIMA, CALLAO" />
         </div>
 
         <div class="grid grid-cols-2 gap-2 pt-1 text-xs font-bold">
@@ -403,29 +489,37 @@
         </div>
 
         <button onclick="guardarPerfil()" id="btn-guardar" class="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-extrabold text-sm py-3.5 rounded-2xl shadow-md transition active:scale-98">
-          💾 Guardar Perfil y Ver Mis Oportunidades
+          Guardar mi Perfil y Ver Oportunidades
         </button>
       </div>
     </section>
 
     <!-- =================================================================== -->
-    <!-- VISTA 5: DATOS REALES SEACE (IMPORTADOR EXCEL/CSV + GESTIÓN DB)     -->
+    <!-- VISTA 5: PANEL ADMINISTRADOR PROTEGIDO POR CLAVE (PUNTO 6)          -->
     <!-- =================================================================== -->
     <section id="vista-sincronizar" class="hidden space-y-4">
-      <!-- Opción 1: Subir Excel / CSV descargado del SEACE -->
+      <div class="bg-slate-900 text-amber-400 rounded-3xl p-4 flex items-center justify-between">
+        <div>
+          <span class="text-[10px] uppercase font-extrabold text-amber-300">Modo Administrador Activo</span>
+          <h2 class="text-base font-extrabold text-white">Gestión Manual de Base de Datos</h2>
+        </div>
+        <button onclick="irAVista('inicio')" class="bg-slate-800 text-white text-xs font-bold px-3 py-1.5 rounded-xl">Salir</button>
+      </div>
+
+      <!-- Subir Excel / CSV descargado de PLADICOP / SEACE -->
       <div class="card-warm-orange rounded-3xl p-5 space-y-3">
-        <span class="bg-orange-500 text-white text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase">Carga Masiva Inmediata</span>
-        <h2 class="text-lg font-extrabold text-slate-900">Importar Reporte Excel / CSV del SEACE</h2>
+        <span class="bg-orange-500 text-white text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase">Carga Masiva</span>
+        <h3 class="text-base font-extrabold text-slate-900">Importar Reporte Excel / CSV</h3>
         <p class="text-xs text-slate-700 leading-relaxed">
-          Cuando descargues un archivo Excel (<code>.xlsx</code>, <code>.xls</code> o <code>.csv</code>) desde el buscador público del SEACE, súbelo aquí para inyectar todos los procesos reales en 1 segundo:
+          Selecciona un archivo Excel (<code>.xlsx</code>, <code>.xls</code> o <code>.csv</code>) exportado desde PLADICOP / SEACE para alimentar la base general de todos los usuarios:
         </p>
-        <input id="archivo-seace" type="file" accept=".xlsx,.xls,.csv" onchange="importarExcelSEACE(event)" class="block w-full text-xs text-slate-700 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-extrabold file:bg-slate-900 file:text-amber-400 hover:file:bg-slate-800" />
+        <input id="archivo-seace" type="file" accept=".xlsx,.xls,.csv" onchange="importarExcelSEACE(event)" class="block w-full text-xs text-slate-700 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-extrabold file:bg-slate-900 file:text-amber-400" />
         <p id="estado-importacion" class="text-xs font-bold text-emerald-700 hidden"></p>
       </div>
 
-      <!-- Opción 2: Registrar una convocatoria real manualmente -->
+      <!-- Registrar una convocatoria manualmente -->
       <div class="bg-white rounded-3xl p-5 border-2 border-amber-300 space-y-3">
-        <h3 class="font-extrabold text-sm text-slate-900">+ Publicar / Agregar Convocatoria Manualmente</h3>
+        <h3 class="font-extrabold text-sm text-slate-900">+ Agregar Convocatoria Manualmente</h3>
         <div class="grid grid-cols-2 gap-2">
           <select id="nuevo-fuente" class="text-xs font-bold bg-amber-50 border border-amber-300 rounded-xl p-2">
             <option value="CONTRATO_MENOR">Contrato Menor (≤ 8 UIT)</option>
@@ -444,72 +538,113 @@
         <div class="grid grid-cols-3 gap-2">
           <input id="nuevo-depto" type="text" placeholder="Depto (LIMA)" value="LIMA" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-xl p-2 font-bold" />
           <input id="nuevo-monto" type="number" placeholder="Monto S/" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-xl p-2 font-bold" />
-          <input id="nuevo-dias" type="number" placeholder="Días plazo" value="3" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-xl p-2 font-bold" />
+          <input id="nuevo-dias" type="number" placeholder="Días plazo" value="5" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-xl p-2 font-bold" />
         </div>
         <button onclick="agregarProcesoManual()" class="w-full bg-slate-900 text-amber-400 font-extrabold text-xs py-3 rounded-xl shadow">
-          Guardar Proceso en la Base de Datos
+          Guardar Proceso en Base de Datos
         </button>
       </div>
 
-      <!-- Opción 3: Limpiar procesos de prueba iniciales -->
+      <!-- Depurar procesos vencidos manualmente -->
       <div class="bg-red-50 rounded-3xl p-4 border-2 border-red-200 flex items-center justify-between gap-3">
         <div>
-          <h4 class="text-xs font-extrabold text-red-900">¿Deseas borrar los procesos de demostración?</h4>
-          <p class="text-[11px] text-red-700">Limpia los procesos de ejemplo (CM-2026-..., PS-2026-...) de tu base de datos.</p>
+          <h4 class="text-xs font-extrabold text-red-900">Depurar Procesos Vencidos / Demo</h4>
+          <p class="text-[11px] text-red-700">Elimina procesos caducados y registros de demostración.</p>
         </div>
         <button onclick="eliminarProcesosDemo()" class="bg-red-600 text-white text-xs font-extrabold px-3 py-2.5 rounded-xl shrink-0">
-          Borrar Demo
+          Depurar Ahora
         </button>
       </div>
     </section>
 
   </main>
 
-  <!-- BARRA DE NAVEGACIÓN INFERIOR CÁLIDA -->
+  <!-- BARRA DE NAVEGACIÓN INFERIOR LIMPIA CON ICONOS VECTORIALES PROFESIONALES -->
   <nav class="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-amber-400 via-amber-400 to-yellow-500 border-t-2 border-amber-600/30 z-30 shadow-lg">
     <div class="max-w-md mx-auto grid grid-cols-4 text-center">
-      <button onclick="irAVista('inicio')" id="nav-inicio" class="py-2.5 flex flex-col items-center text-slate-950 font-extrabold text-xs">
-        <span class="text-base">🏠</span>
+      <button onclick="irAVista('inicio')" id="nav-inicio" class="py-2 flex flex-col items-center justify-center gap-0.5 text-slate-950 font-extrabold text-[11px]">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10.5L12 3l9 7.5V21a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1v-10.5z"/></svg>
         <span>Inicio</span>
       </button>
-      <button onclick="irAVista('parati')" id="nav-parati" class="py-2.5 flex flex-col items-center text-slate-800/70 font-bold text-xs">
-        <span class="text-base">🎯</span>
+      <button onclick="irAVista('parati')" id="nav-parati" class="py-2 flex flex-col items-center justify-center gap-0.5 text-slate-800/70 font-bold text-[11px]">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
         <span>Para Mí</span>
       </button>
-      <button onclick="irAVista('explorar')" id="nav-explorar" class="py-2.5 flex flex-col items-center text-slate-800/70 font-bold text-xs">
-        <span class="text-base">🔎</span>
-        <span>Filtrar SEACE</span>
+      <button onclick="irAVista('explorar')" id="nav-explorar" class="py-2 flex flex-col items-center justify-center gap-0.5 text-slate-800/70 font-bold text-[11px]">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"/></svg>
+        <span>PLADICOP</span>
       </button>
-      <button onclick="irAVista('perfiles')" id="nav-perfiles" class="py-2.5 flex flex-col items-center text-slate-800/70 font-bold text-xs">
-        <span class="text-base">🏢</span>
-        <span>Empresas</span>
+      <button onclick="irAVista('perfiles')" id="nav-perfiles" class="py-2 flex flex-col items-center justify-center gap-0.5 text-slate-800/70 font-bold text-[11px]">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+        <span>Mi Empresa</span>
       </button>
     </div>
   </nav>
 
   <script>
     // =========================================================================
-    // CONEXIÓN EN VIVO A TU SUPABASE Y TOKEN OFICIAL APISPERU (SUNAT)
+    // 1. CONEXIÓN A SUPABASE Y CONFIGURACIÓN INICIAL
     // =========================================================================
     const SUPABASE_URL = "https://ggjhiwffoiftgfpgmmeu.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_Z4Ltm0PaOUmmoOdYyd4Nkw_DfCxG9ax";
     const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // Token oficial de ApisPeru integrado:
     const TOKEN_SUNAT_OPCIONAL = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InJjYXN0aWxsby5pbWxAZ21haWwuY29tIiwianRpIjoiOTNmN2NjODM1M2Q0ZThjZSJ9.9wlbFeHTpDNJqA0A_63S8rsbfzjxWPF8Yk8UNGIE-bg";
+    const CLAVE_ADMIN_SISTEMA = "admin";
 
-    let todasLasEmpresas = [];
+    let misEmpresasDispositivo = [];
     let perfilActual = null;
     let todosLosProcesos = [];
     let ultimasOportunidadesMatch = [];
+    let departamentosSeleccionados = ["LIMA", "CALLAO"];
 
-    // Formateador de Soles
+    // Punto 9: Por defecto SIEMPRE se ocultan los procesos con plazo cerrado (true)
+    let ocultarPlazosCerrados = localStorage.getItem("pladicop_ocultar_cerrados") !== "false";
+    document.getElementById("chk-ocultar-cerrados").checked = ocultarPlazosCerrados;
+
+    // Punto 5: Lista privada de IDs de perfiles creados en este dispositivo
+    function obtenerIdsPerfilesDeEsteDispositivo() {
+      try {
+        const guardado = JSON.parse(localStorage.getItem("pladicop_mis_perfiles_ids") || "[]");
+        if (Array.isArray(guardado) && guardado.length > 0) return guardado;
+        // Migrar si tenía un perfil activo previo en este teléfono
+        const unicoPrevio = localStorage.getItem("radar_seace_empresa_id");
+        if (unicoPrevio) {
+          localStorage.setItem("pladicop_mis_perfiles_ids", JSON.stringify([unicoPrevio]));
+          return [unicoPrevio];
+        }
+        return [];
+      } catch (_) {
+        return [];
+      }
+    }
+
+    function registrarIdPerfilEnEsteDispositivo(idPerfil) {
+      if (!idPerfil) return;
+      const actuales = obtenerIdsPerfilesDeEsteDispositivo();
+      if (!actuales.includes(idPerfil)) {
+        actuales.push(idPerfil);
+        localStorage.setItem("pladicop_mis_perfiles_ids", JSON.stringify(actuales));
+      }
+      localStorage.setItem("radar_seace_empresa_id", idPerfil);
+    }
+
+    function quitarIdPerfilDeEsteDispositivo(idPerfil) {
+      const actuales = obtenerIdsPerfilesDeEsteDispositivo().filter(id => id !== idPerfil);
+      localStorage.setItem("pladicop_mis_perfiles_ids", JSON.stringify(actuales));
+      if (localStorage.getItem("radar_seace_empresa_id") === idPerfil) {
+        localStorage.removeItem("radar_seace_empresa_id");
+      }
+    }
+
     const formatoSoles = (monto) => {
       if (monto === null || monto === undefined || isNaN(monto)) return "Reservado";
       return "S/ " + Number(monto).toLocaleString("es-PE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     };
 
-    // Abrir / Cerrar Menú Lateral (> MENÚ)
+    // =========================================================================
+    // 2. NAVEGACIÓN, MENÚ LATERAL Y ACCESO ADMIN CON CLAVE "admin"
+    // =========================================================================
     function toggleMenu(abrir) {
       const overlay = document.getElementById("drawer-overlay");
       const menu = document.getElementById("drawer-menu");
@@ -522,18 +657,39 @@
       }
     }
 
-    // Cambiar entre las 5 vistas de la App
+    function solicitarAccesoAdmin() {
+      toggleMenu(false);
+      document.getElementById("input-clave-admin").value = "";
+      document.getElementById("error-clave-admin").classList.add("hidden");
+      document.getElementById("modal-admin").classList.remove("hidden");
+      setTimeout(() => document.getElementById("input-clave-admin").focus(), 100);
+    }
+
+    function cerrarModalAdmin() {
+      document.getElementById("modal-admin").classList.add("hidden");
+    }
+
+    function verificarClaveAdmin() {
+      const clave = document.getElementById("input-clave-admin").value.trim();
+      if (clave === CLAVE_ADMIN_SISTEMA) {
+        cerrarModalAdmin();
+        irAVista("sincronizar");
+      } else {
+        document.getElementById("error-clave-admin").classList.remove("hidden");
+      }
+    }
+
     function irAVista(vista) {
       toggleMenu(false);
       const vistas = ["inicio", "parati", "explorar", "perfiles", "sincronizar"];
       const titulos = {
-        inicio: "Inicio",
-        parati: "Para Mí",
-        explorar: "Buscador SEACE",
-        perfiles: "Mis Empresas",
-        sincronizar: "Datos SEACE"
+        inicio: "Oportunidades del Estado",
+        parati: "Oportunidades Para Mí",
+        explorar: "Buscar en PLADICOP",
+        perfiles: "Perfil de mi Empresa",
+        sincronizar: "Panel Administrador"
       };
-      document.getElementById("titulo-cabecera").innerText = titulos[vista] || "Radar SEACE";
+      document.getElementById("titulo-cabecera").innerText = titulos[vista] || "Oportunidades del Estado";
 
       vistas.forEach(v => {
         const sec = document.getElementById(`vista-${v}`);
@@ -541,8 +697,8 @@
         const btn = document.getElementById(`nav-${v}`);
         if (btn) {
           btn.className = (v === vista)
-            ? "py-2.5 flex flex-col items-center text-slate-950 font-extrabold text-xs"
-            : "py-2.5 flex flex-col items-center text-slate-800/70 font-bold text-xs";
+            ? "py-2 flex flex-col items-center justify-center gap-0.5 text-slate-950 font-extrabold text-[11px] bg-amber-300/60"
+            : "py-2 flex flex-col items-center justify-center gap-0.5 text-slate-800/70 font-bold text-[11px]";
         }
       });
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -553,31 +709,99 @@
       prepararNuevoPerfil();
     }
 
-    // Semáforo de horas restantes
+    function cambiarPreferenciaPlazos(ocultar) {
+      ocultarPlazosCerrados = ocultar;
+      localStorage.setItem("pladicop_ocultar_cerrados", ocultar ? "true" : "false");
+      if (perfilActual) cargarOportunidadesPerfil(perfilActual.id);
+      renderExplorar();
+    }
+
+    // =========================================================================
+    // 3. GESTIÓN DE COMBO Y ETIQUETAS DE DEPARTAMENTOS (PUNTO 13)
+    // =========================================================================
+    function renderizarChipsDepartamentos() {
+      const contenedor = document.getElementById("chips-departamentos");
+      const inputOculto = document.getElementById("perf-deptos");
+      if (!departamentosSeleccionados || departamentosSeleccionados.length === 0) {
+        departamentosSeleccionados = ["LIMA"];
+      }
+      inputOculto.value = departamentosSeleccionados.join(", ");
+
+      contenedor.innerHTML = departamentosSeleccionados.map(dep => `
+        <span class="inline-flex items-center gap-1.5 bg-amber-200 text-slate-900 text-xs font-extrabold px-3 py-1 rounded-full border border-amber-400">
+          <span>${dep === "TODOS" ? "🌎 Todo el Perú" : dep}</span>
+          <button type="button" onclick="quitarDepartamentoChip('${dep}')" class="text-slate-700 hover:text-red-700 font-extrabold">✕</button>
+        </span>
+      `).join("");
+    }
+
+    function agregarDepartamentoDesdeCombo(valor) {
+      const combo = document.getElementById("combo-depto-perfil");
+      combo.value = "";
+      if (!valor) return;
+      if (valor === "TODOS") {
+        departamentosSeleccionados = ["TODOS"];
+      } else {
+        departamentosSeleccionados = departamentosSeleccionados.filter(d => d !== "TODOS");
+        if (!departamentosSeleccionados.includes(valor)) {
+          departamentosSeleccionados.push(valor);
+        }
+      }
+      renderizarChipsDepartamentos();
+    }
+
+    function seleccionarTodosLosDepartamentos() {
+      departamentosSeleccionados = ["TODOS"];
+      renderizarChipsDepartamentos();
+    }
+
+    function quitarDepartamentoChip(dep) {
+      departamentosSeleccionados = departamentosSeleccionados.filter(d => d !== dep);
+      if (departamentosSeleccionados.length === 0) {
+        departamentosSeleccionados = ["LIMA"];
+      }
+      renderizarChipsDepartamentos();
+    }
+
+    // =========================================================================
+    // 4. SEMÁFORO DE PLAZOS Y VÍNCULO DIRECTO A PLADICOP / SEACE (PUNTOS 9, 10, 12)
+    // =========================================================================
     function calcularSemaforo(fechaLimiteISO) {
-      if (!fechaLimiteISO) return { color: "bg-emerald-100 text-emerald-900 border-emerald-300", texto: "En consulta", horas: 99 };
+      if (!fechaLimiteISO) return { color: "bg-emerald-100 text-emerald-900 border-emerald-300", texto: "Vigente", horas: 96, dias: 4 };
       const ahora = new Date();
       const limite = new Date(fechaLimiteISO);
       const horasRestantes = (limite - ahora) / (1000 * 60 * 60);
+      const diasRestantes = Math.ceil(horasRestantes / 24);
 
       if (horasRestantes <= 0) {
-        return { color: "bg-slate-200 text-slate-600 border-slate-300", texto: "Plazo cerrado", horas: 0 };
+        return { color: "bg-slate-200 text-slate-600 border-slate-300", texto: "Plazo cerrado", horas: 0, dias: 0 };
       } else if (horasRestantes <= 24) {
-        return { color: "bg-red-100 text-red-800 border-red-300 animate-pulse", texto: `🔴 Vence en ${Math.ceil(horasRestantes)}h`, horas: horasRestantes };
-      } else if (horasRestantes <= 72) {
-        return { color: "bg-amber-100 text-amber-900 border-amber-400", texto: `🟡 Quedan ${Math.ceil(horasRestantes / 24)} días`, horas: horasRestantes };
+        return { color: "bg-red-100 text-red-800 border-red-300 animate-pulse", texto: `🔴 Vence en ${Math.ceil(horasRestantes)}h`, horas: horasRestantes, dias: 1 };
+      } else if (diasRestantes <= 3) {
+        return { color: "bg-amber-100 text-amber-900 border-amber-400", texto: `🟡 Quedan ${diasRestantes} días`, horas: horasRestantes, dias: diasRestantes };
       } else {
-        return { color: "bg-emerald-100 text-emerald-900 border-emerald-300", texto: `🟢 Quedan ${Math.ceil(horasRestantes / 24)} días`, horas: horasRestantes };
+        return { color: "bg-emerald-100 text-emerald-900 border-emerald-300", texto: `🟢 Quedan ${diasRestantes} días`, horas: horasRestantes, dias: diasRestantes };
       }
     }
 
     function etiquetaOrigenMonto(origen) {
-      if (origen === "ESTIMADO_PAC") return "Estimado PAC";
+      if (origen === "ESTIMADO_PAC") return "Ref. PAC";
       if (origen === "TOPE_8_UIT") return "Ref. ≤ 8 UIT";
       return "Cuantía Oficial";
     }
 
-    // Crear tarjeta visual de cada proceso
+    // Punto 10: Copia el código exacto del proceso al portapapeles y abre el portal directo
+    function abrirProcesoDirecto(nomenclatura, urlDestino) {
+      if (navigator.clipboard && nomenclatura) {
+        navigator.clipboard.writeText(nomenclatura).catch(() => {});
+      }
+      const toast = document.getElementById("toast-copiado");
+      toast.innerText = `📋 Código "${nomenclatura}" copiado automáticamente para pegar en el buscador`;
+      toast.classList.remove("hidden");
+      setTimeout(() => toast.classList.add("hidden"), 3500);
+      window.open(urlDestino, "_blank", "noopener");
+    }
+
     function crearTarjetaProceso(p, mostrarMatch = false) {
       const semaforo = calcularSemaforo(p.fecha_limite_oferta);
       const esMenor = p.fuente === "CONTRATO_MENOR";
@@ -587,24 +811,28 @@
 
       const bloqueMatch = (mostrarMatch && p.puntaje_compatibilidad)
         ? `<div class="flex items-center justify-between bg-amber-100 border border-amber-300 rounded-2xl px-3 py-1.5 mb-2">
-             <span class="text-xs font-extrabold text-amber-950">🔥 ${p.puntaje_compatibilidad}% Compatible</span>
-             <span class="text-[11px] font-bold text-amber-900 truncate max-w-[190px]">${p.motivo_match || "Calza con tu perfil"}</span>
+             <span class="text-xs font-extrabold text-amber-950">🎯 ${p.puntaje_compatibilidad}% Compatible</span>
+             <span class="text-[11px] font-bold text-amber-900 truncate max-w-[180px]">${p.motivo_match || "Calza con tu empresa"}</span>
            </div>`
         : "";
 
-      const urlDoc = p.url_documento || (esMenor ? "https://prod6.seace.gob.pe/buscador-publico/contrataciones" : "https://prod2.seace.gob.pe/seacebus-uiwd-pub/buscadorPublico/buscadorPublico.xhtml");
+      const urlPortal = p.url_documento || (esMenor
+        ? "https://prep6.seace.gob.pe/buscador-publico/contrataciones"
+        : "https://prod2.seace.gob.pe/seacebus-uiwd-pub/buscadorPublico/buscadorPublico.xhtml");
+
+      const nomSegura = String(p.nomenclatura || "").replace(/'/g, "");
       const textoWa = encodeURIComponent(
-        `📊 *Oportunidad SEACE Detectada*\n` +
+        `📊 *Oportunidad Detectada en PLADICOP*\n` +
         `📌 *Proceso:* ${p.nomenclatura}\n` +
         `🏛️ *Entidad:* ${p.entidad}\n` +
-        `📦 *Objeto:* ${p.objeto_contratacion} (${p.departamento})\n` +
+        `📦 *Categoría:* ${p.objeto_contratacion} (${p.departamento})\n` +
         `📝 *Descripción:* ${p.descripcion}\n` +
         `💰 *Monto Ref:* ${formatoSoles(p.monto_referencial)}\n` +
-        `🔗 *Enlace:* ${urlDoc}`
+        `🔗 *Portal:* ${urlPortal}`
       );
 
       return `
-        <article class="bg-white rounded-3xl p-4 shadow-sm border-2 border-amber-200 space-y-2.5">
+        <article class="bg-white rounded-3xl p-4 shadow-sm border-2 border-amber-200 space-y-2.5 overflow-hidden">
           ${bloqueMatch}
           <div class="flex items-center justify-between gap-1 flex-wrap">
             ${badgeFuente}
@@ -612,32 +840,33 @@
           </div>
 
           <div>
-            <p class="text-xs font-extrabold text-orange-600">${p.nomenclatura}</p>
-            <h3 class="text-xs font-extrabold text-slate-900 mt-0.5">${p.entidad}</h3>
-            <p class="text-xs text-slate-700 mt-1 leading-relaxed font-medium">${p.descripcion}</p>
+            <p class="text-xs font-extrabold text-orange-600 break-words">${p.nomenclatura}</p>
+            <h3 class="text-xs font-extrabold text-slate-900 mt-0.5 break-words">${p.entidad}</h3>
+            <p class="text-xs text-slate-700 mt-1 leading-relaxed font-medium break-words">${p.descripcion}</p>
           </div>
 
-          <div class="bg-amber-50/70 border border-amber-200 rounded-2xl p-2.5 grid grid-cols-3 gap-2 text-center">
-            <div>
-              <span class="block text-[10px] font-bold text-slate-500">Monto (${etiquetaOrigenMonto(p.origen_monto)})</span>
-              <span class="text-xs font-extrabold text-slate-900">${formatoSoles(p.monto_referencial)}</span>
+          <div class="bg-amber-50/70 border border-amber-200 rounded-2xl p-2.5 grid grid-cols-3 gap-1.5 text-center">
+            <div class="min-w-0">
+              <span class="block text-[10px] font-bold text-slate-500 truncate">Monto (${etiquetaOrigenMonto(p.origen_monto)})</span>
+              <span class="text-xs font-extrabold text-slate-900 truncate block">${formatoSoles(p.monto_referencial)}</span>
             </div>
-            <div>
-              <span class="block text-[10px] font-bold text-slate-500">Objeto</span>
-              <span class="text-xs font-extrabold text-slate-800">${p.objeto_contratacion}</span>
+            <div class="min-w-0">
+              <span class="block text-[10px] font-bold text-slate-500">Categoría</span>
+              <span class="text-xs font-extrabold text-slate-800 truncate block">${p.objeto_contratacion}</span>
             </div>
-            <div>
+            <div class="min-w-0">
               <span class="block text-[10px] font-bold text-slate-500">Ubicación</span>
-              <span class="text-xs font-extrabold text-slate-800">${p.departamento}</span>
+              <span class="text-xs font-extrabold text-slate-800 truncate block">${p.departamento}</span>
             </div>
           </div>
 
           <div class="grid grid-cols-2 gap-2 pt-1">
-            <a href="${urlDoc}" target="_blank" rel="noopener" class="bg-slate-900 hover:bg-slate-800 text-amber-400 text-center text-xs font-extrabold py-2.5 rounded-xl transition">
-              📄 Ver en SEACE
-            </a>
-            <a href="https://wa.me/?text=${textoWa}" target="_blank" rel="noopener" class="bg-emerald-600 hover:bg-emerald-700 text-white text-center text-xs font-extrabold py-2.5 rounded-xl transition">
-              📲 Enviar WhatsApp
+            <button type="button" onclick="abrirProcesoDirecto('${nomSegura}', '${urlPortal}')" class="bg-slate-900 hover:bg-slate-800 text-amber-400 text-center text-xs font-extrabold py-2.5 px-2 rounded-xl transition active:scale-95">
+              📄 Ver en PLADICOP
+            </button>
+            <a href="https://wa.me/?text=${textoWa}" target="_blank" rel="noopener" class="bg-[#25D366] hover:bg-[#20bd5a] text-white text-center text-xs font-extrabold py-2.5 px-2 rounded-xl flex items-center justify-center gap-1.5 transition active:scale-95">
+              <svg class="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24"><path d="M12.031 2c-5.516 0-9.969 4.453-9.969 9.969 0 1.766.469 3.484 1.359 5.016L2 22l5.141-1.344c1.484.813 3.172 1.25 4.891 1.25 5.516 0 9.969-4.453 9.969-9.969S17.547 2 12.031 2zm5.828 14.125c-.25.703-1.453 1.344-2.016 1.422-.516.078-1.172.109-1.891-.125-.438-.141-1-.328-1.719-.641-3.031-1.313-5.016-4.375-5.172-4.578-.156-.203-1.234-1.641-1.234-3.125 0-1.484.781-2.219 1.063-2.531.281-.313.609-.391.813-.391.203 0 .406.016.578.016.188 0 .438-.078.688.531.25.609.844 2.063.922 2.219.078.156.125.328.031.531-.094.203-.156.328-.313.516-.156.172-.313.391-.453.531-.156.156-.313.328-.141.625.172.313.781 1.297 1.672 2.094 1.156 1.031 2.125 1.344 2.438 1.5.313.156.484.125.672-.078.188-.203.766-.891.969-1.203.203-.313.406-.25.688-.156.281.094 1.781.844 2.094 1 .313.156.516.234.594.359.078.125.078.734-.172 1.438z"/></svg>
+              <span>WhatsApp</span>
             </a>
           </div>
         </article>
@@ -645,56 +874,46 @@
     }
 
     // =========================================================================
-    // CONEXIÓN AUTOMÁTICA CON PADRÓN PÚBLICO SUNAT POR RUC (CON TOKEN APISPERU)
+    // 5. CONSULTA SILENCIOSA DE RUC AL COMPLETAR 11 DÍGITOS (PUNTO 4)
     // =========================================================================
     function verificarLongitudRuc(valor) {
       const limpio = valor.replace(/\D/g, "");
       document.getElementById("perf-ruc").value = limpio;
       if (limpio.length === 11) {
-        consultarRucSunat();
+        consultarRucAutomatico(limpio);
       }
     }
 
-    async function consultarRucSunat() {
-      const ruc = document.getElementById("perf-ruc").value.trim();
-      const btn = document.getElementById("btn-sunat");
+    async function consultarRucAutomatico(ruc) {
       const badge = document.getElementById("badge-estado-sunat");
       const infoDir = document.getElementById("info-direccion-sunat");
 
-      if (ruc.length !== 11 || (!ruc.startsWith("10") && !ruc.startsWith("15") && !ruc.startsWith("17") && !ruc.startsWith("20"))) {
-        alert("Ingresa un número de RUC válido de 11 dígitos (iniciado en 10, 15, 17 o 20).");
+      if (!ruc.startsWith("10") && !ruc.startsWith("15") && !ruc.startsWith("17") && !ruc.startsWith("20")) {
+        badge.innerText = "RUC inválido";
         return;
       }
 
-      btn.innerText = "⏳...";
-      badge.className = "block text-center text-[10px] font-extrabold py-2.5 px-2 rounded-xl bg-amber-200 text-amber-900 border border-amber-400 animate-pulse";
-      badge.innerText = "Consultando SUNAT...";
+      badge.className = "block text-center text-[10px] font-extrabold py-2.5 px-2 rounded-xl bg-amber-200 text-amber-900 border border-amber-400 animate-pulse truncate";
+      badge.innerText = "Verificando RUC...";
       infoDir.classList.add("hidden");
 
       try {
         let datos = null;
-
-        // 1. Consulta directa a ApisPeru con tu Token
         if (TOKEN_SUNAT_OPCIONAL && TOKEN_SUNAT_OPCIONAL.trim() !== "") {
           try {
             const urlApisPeru = `https://dniruc.apisperu.com/api/v1/ruc/${ruc}?token=${TOKEN_SUNAT_OPCIONAL.trim()}`;
             const r1 = await fetch(urlApisPeru);
             if (r1.ok) {
               const json1 = await r1.json();
-              if (json1 && (json1.razonSocial || json1.nombre)) {
-                datos = json1;
-              }
+              if (json1 && (json1.razonSocial || json1.nombre)) datos = json1;
             }
-          } catch (e) {
-            console.warn("Aviso ApisPeru:", e);
-          }
+          } catch (_) {}
         }
 
-        // 2. Respaldo si el RUC ya existe en Supabase
         if (!datos || (!datos.razonSocial && !datos.nombre)) {
           const { data: localEmp } = await sb
             .from("perfiles_empresa")
-            .select("razon_social, departamentos_interes")
+            .select("id, razon_social, departamentos_interes")
             .eq("ruc", ruc)
             .maybeSingle();
 
@@ -714,43 +933,39 @@
         const depto = (datos?.departamento || "").toUpperCase().trim();
         const direccion = (datos?.direccion || "").trim();
 
-        if (!razonSocial) {
-          throw new Error("No se encontró el RUC en el padrón SUNAT");
-        }
+        if (!razonSocial) throw new Error("Ingreso manual");
 
-        // Autocompletar campos del formulario
         document.getElementById("perf-razon").value = razonSocial;
         if (depto) {
-          document.getElementById("perf-deptos").value = depto === "LIMA" ? "LIMA, CALLAO" : depto;
+          departamentosSeleccionados = depto === "LIMA" ? ["LIMA", "CALLAO"] : [depto];
+          renderizarChipsDepartamentos();
         }
         if (direccion) {
-          infoDir.innerText = `📍 Domicilio Fiscal SUNAT: ${direccion} (${depto || "PERÚ"})`;
+          infoDir.innerText = `📍 ${direccion} (${depto || "PERÚ"})`;
           infoDir.classList.remove("hidden");
         }
 
         const esValido = estado.includes("ACTIVO") && condicion.includes("HABIDO");
         badge.className = esValido
-          ? "block text-center text-[10px] font-extrabold py-2.5 px-2 rounded-xl bg-emerald-100 text-emerald-900 border border-emerald-400"
-          : "block text-center text-[10px] font-extrabold py-2.5 px-2 rounded-xl bg-red-100 text-red-800 border border-red-300";
+          ? "block text-center text-[10px] font-extrabold py-2.5 px-2 rounded-xl bg-emerald-100 text-emerald-900 border border-emerald-400 truncate"
+          : "block text-center text-[10px] font-extrabold py-2.5 px-2 rounded-xl bg-red-100 text-red-800 border border-red-300 truncate";
         badge.innerText = `${estado} • ${condicion}`;
-
-      } catch (err) {
-        badge.className = "block text-center text-[10px] font-extrabold py-2.5 px-2 rounded-xl bg-amber-100 text-amber-900 border border-amber-300";
-        badge.innerText = "Completa manual";
+      } catch (_) {
+        badge.className = "block text-center text-[10px] font-extrabold py-2.5 px-2 rounded-xl bg-amber-100 text-amber-900 border border-amber-300 truncate";
+        badge.innerText = "Escribe el nombre";
         document.getElementById("perf-razon").focus();
-      } finally {
-        btn.innerText = "🔍 SUNAT";
       }
     }
 
     // =========================================================================
-    // CARGA DE DATOS Y MULTIUSUARIO REAL DESDE SUPABASE
+    // 6. CARGA DE PROCESOS Y PRIVACIDAD POR DISPOSITIVO (PUNTOS 5, 9, 11)
     // =========================================================================
     async function recargarDatos(idEmpresaPreferida = null) {
       const alerta = document.getElementById("alerta-sistema");
       alerta.classList.add("hidden");
 
       try {
+        // 1. Obtener procesos vigentes de la base compartida
         const { data: procData, error: procErr } = await sb
           .from("procesos_seace")
           .select("*")
@@ -759,26 +974,43 @@
 
         if (procErr) throw procErr;
         todosLosProcesos = procData || [];
-        document.getElementById("badge-inicio-total").innerText = `${todosLosProcesos.length} vigentes`;
 
-        const { data: perfData, error: perfErr } = await sb
-          .from("perfiles_empresa")
-          .select("*")
-          .order("fecha_registro", { ascending: false });
+        const vigentesEnFecha = todosLosProcesos.filter(p => calcularSemaforo(p.fecha_limite_oferta).horas > 0);
+        document.getElementById("badge-inicio-total").innerText = `${vigentesEnFecha.length} vigentes`;
 
-        if (perfErr) throw perfErr;
-        todasLasEmpresas = perfData || [];
+        // 2. Punto 5: Cargar ÚNICAMENTE los perfiles creados en este dispositivo
+        const idsDeEsteEquipo = obtenerIdsPerfilesDeEsteDispositivo();
+        if (idsDeEsteEquipo.length > 0) {
+          const { data: perfData, error: perfErr } = await sb
+            .from("perfiles_empresa")
+            .select("*")
+            .in("id", idsDeEsteEquipo)
+            .order("fecha_registro", { ascending: false });
+
+          if (perfErr) throw perfErr;
+          misEmpresasDispositivo = perfData || [];
+        } else {
+          misEmpresasDispositivo = [];
+        }
 
         const idGuardado = idEmpresaPreferida || localStorage.getItem("radar_seace_empresa_id");
 
-        if (todasLasEmpresas.length > 0) {
-          perfilActual = todasLasEmpresas.find(e => e.id === idGuardado) || todasLasEmpresas[0];
+        if (misEmpresasDispositivo.length > 0) {
+          perfilActual = misEmpresasDispositivo.find(e => e.id === idGuardado) || misEmpresasDispositivo[0];
           localStorage.setItem("radar_seace_empresa_id", perfilActual.id);
           await activarPerfilEnPantalla(perfilActual);
         } else {
           perfilActual = null;
-          document.getElementById("nombre-empresa-cabecera").innerText = "Sin empresa";
-          document.getElementById("tope-empresa-cabecera").innerText = "S/ 0";
+          document.getElementById("tope-empresa-cabecera").innerText = "S/ 0.00";
+          document.getElementById("drawer-empresa-actual").innerText = "Sin empresa registrada";
+          document.getElementById("contador-match").innerText = "0";
+          document.getElementById("badge-inicio-match").innerText = "0 para ti";
+          document.getElementById("lista-parati").innerHTML = `
+            <div class="bg-white rounded-3xl p-6 text-center border-2 border-amber-200 space-y-3">
+              <p class="text-sm font-extrabold text-slate-800">Aún no has registrado tu empresa en este celular</p>
+              <p class="text-xs text-slate-600">Registra el perfil de tu empresa para que el sistema filtre automáticamente tus oportunidades.</p>
+              <button onclick="irANuevoPerfilDirecto()" class="bg-amber-500 text-slate-950 font-extrabold text-xs px-4 py-2.5 rounded-xl">Registrar mi Empresa</button>
+            </div>`;
           prepararNuevoPerfil();
         }
 
@@ -793,19 +1025,18 @@
 
     async function activarPerfilEnPantalla(perfil) {
       perfilActual = perfil;
-      document.getElementById("nombre-empresa-cabecera").innerText = perfil.razon_social;
       document.getElementById("tope-empresa-cabecera").innerText = formatoSoles(perfil.monto_maximo_interes);
-      document.getElementById("drawer-empresa-actual").innerText = `${perfil.razon_social} (RUC: ${perfil.ruc})`;
+      document.getElementById("drawer-empresa-actual").innerText = `${perfil.razon_social} (${perfil.ruc})`;
       document.getElementById("titulo-parati-empresa").innerText = `Para: ${perfil.razon_social}`;
       document.getElementById("resumen-parati-criterios").innerText =
-        `Rubros: ${(perfil.palabras_clave || []).join(", ")} • Zonas: ${(perfil.departamentos_interes || []).join(", ")}`;
+        `Rubros: ${(perfil.palabras_clave || []).join(", ")} • Regiones: ${(perfil.departamentos_interes || []).join(", ")}`;
 
       llenarFormularioPerfil(perfil);
       await cargarOportunidadesPerfil(perfil.id);
     }
 
     async function cambiarEmpresaActiva(empresaId) {
-      const encontrada = todasLasEmpresas.find(e => e.id === empresaId);
+      const encontrada = misEmpresasDispositivo.find(e => e.id === empresaId);
       if (!encontrada) return;
       localStorage.setItem("radar_seace_empresa_id", encontrada.id);
       await activarPerfilEnPantalla(encontrada);
@@ -815,33 +1046,33 @@
 
     function renderSelectorEmpresas() {
       const sel = document.getElementById("selector-empresa-global");
-      if (todasLasEmpresas.length === 0) {
-        sel.innerHTML = `<option value="">Registra tu primera empresa →</option>`;
+      if (misEmpresasDispositivo.length === 0) {
+        sel.innerHTML = `<option value="">Registra tu empresa aquí →</option>`;
         return;
       }
-      sel.innerHTML = todasLasEmpresas.map(e =>
-        `<option value="${e.id}" ${perfilActual && e.id === perfilActual.id ? "selected" : ""}>${e.razon_social} (${e.ruc})</option>`
+      sel.innerHTML = misEmpresasDispositivo.map(e =>
+        `<option value="${e.id}" ${perfilActual && e.id === perfilActual.id ? "selected" : ""}>${e.razon_social}</option>`
       ).join("");
     }
 
     function renderListaEmpresas() {
       const cont = document.getElementById("lista-empresas-registradas");
-      if (todasLasEmpresas.length === 0) {
-        cont.innerHTML = `<p class="text-xs text-slate-500 py-2">Aún no hay empresas registradas.</p>`;
+      if (misEmpresasDispositivo.length === 0) {
+        cont.innerHTML = `<p class="text-xs text-slate-500 py-1">No hay perfiles registrados en este dispositivo. Completa el formulario de abajo para crear el tuyo.</p>`;
         return;
       }
-      cont.innerHTML = todasLasEmpresas.map(e => {
+      cont.innerHTML = misEmpresasDispositivo.map(e => {
         const esActiva = perfilActual && perfilActual.id === e.id;
         return `
           <div class="flex items-center justify-between p-3 rounded-2xl border-2 ${esActiva ? "bg-amber-100/90 border-amber-500" : "bg-white border-slate-200"}">
-            <div onclick="cambiarEmpresaActiva('${e.id}')" class="cursor-pointer flex-1 pr-2">
+            <div onclick="cambiarEmpresaActiva('${e.id}')" class="cursor-pointer min-w-0 flex-1 pr-2">
               <div class="flex items-center gap-1.5">
-                <span class="text-xs font-extrabold text-slate-900">${e.razon_social}</span>
-                ${esActiva ? `<span class="bg-amber-500 text-slate-950 text-[9px] font-extrabold px-1.5 py-0.5 rounded-md">ACTIVA</span>` : ""}
+                <span class="text-xs font-extrabold text-slate-900 truncate">${e.razon_social}</span>
+                ${esActiva ? `<span class="bg-amber-500 text-slate-950 text-[9px] font-extrabold px-1.5 py-0.5 rounded-md shrink-0">ACTIVO</span>` : ""}
               </div>
-              <p class="text-[11px] text-slate-600 font-medium">RUC: ${e.ruc} • Exp: ${formatoSoles(e.experiencia_acumulada_soles)}</p>
+              <p class="text-[11px] text-slate-600 font-medium truncate">RUC: ${e.ruc} • Exp: ${formatoSoles(e.experiencia_acumulada_soles)}</p>
             </div>
-            <button onclick="eliminarEmpresa('${e.id}', '${e.razon_social}')" title="Eliminar" class="text-red-600 hover:bg-red-50 p-2 rounded-xl text-xs font-bold">
+            <button onclick="eliminarEmpresa('${e.id}', '${e.razon_social.replace(/'/g, "")}')" title="Quitar perfil" class="text-red-600 hover:bg-red-50 p-2 rounded-xl text-xs font-bold shrink-0">
               🗑️
             </button>
           </div>
@@ -863,20 +1094,25 @@
       const mapaUrl = {};
       todosLosProcesos.forEach(pr => { mapaUrl[pr.id] = pr.url_documento; });
 
-      const lista = (matchData || []).map(item => ({
+      let lista = (matchData || []).map(item => ({
         ...item,
         url_documento: mapaUrl[item.proceso_id]
       }));
 
+      // Punto 9: Si "Ocultar procesos con plazo cerrado" está activo (por defecto sí), filtrar cerrados
+      if (ocultarPlazosCerrados) {
+        lista = lista.filter(item => calcularSemaforo(item.fecha_limite_oferta).horas > 0);
+      }
+
       ultimasOportunidadesMatch = lista;
       document.getElementById("contador-match").innerText = lista.length;
-      document.getElementById("badge-inicio-match").innerText = `${lista.length} compat.`;
+      document.getElementById("badge-inicio-match").innerText = `${lista.length} para ti`;
 
       if (lista.length === 0) {
         contenedor.innerHTML = `
           <div class="bg-white rounded-3xl p-6 text-center border-2 border-amber-200 space-y-2">
-            <p class="text-sm font-extrabold text-slate-800">No hay procesos vigentes con +50% de compatibilidad</p>
-            <p class="text-xs text-slate-600">Puedes ampliar tus palabras clave o departamentos en "Mis Empresas".</p>
+            <p class="text-sm font-extrabold text-slate-800">No hay procesos vigentes que coincidan con tus palabras clave hoy</p>
+            <p class="text-xs text-slate-600">Puedes agregar más palabras clave o departamentos en "Mi Empresa" o explorar todas las convocatorias en "PLADICOP".</p>
           </div>`;
         return;
       }
@@ -884,6 +1120,9 @@
       contenedor.innerHTML = lista.map(p => crearTarjetaProceso(p, true)).join("");
     }
 
+    // =========================================================================
+    // 7. BUSCADOR MULTICRITERIO EN PLADICOP (PUNTOS 9 y 12)
+    // =========================================================================
     function limpiarFiltros() {
       document.getElementById("filtro-texto").value = "";
       document.getElementById("filtro-fuente").value = "TODOS";
@@ -906,6 +1145,11 @@
       const montoMax = montoMaxInput ? Number(montoMaxInput) : Infinity;
 
       const filtrados = todosLosProcesos.filter(p => {
+        const sem = calcularSemaforo(p.fecha_limite_oferta);
+
+        // Punto 9: Omitir plazo cerrado por defecto salvo que el usuario lo desactive en el menú
+        if (ocultarPlazosCerrados && sem.horas <= 0) return false;
+
         if (fuente !== "TODOS" && p.fuente !== fuente) return false;
         if (objeto !== "TODOS" && p.objeto_contratacion !== objeto) return false;
         if (depto !== "TODOS" && (p.departamento || "").toUpperCase() !== depto) return false;
@@ -913,10 +1157,15 @@
         const montoProc = Number(p.monto_referencial || 0);
         if (montoProc < montoMin || montoProc > montoMax) return false;
 
+        // Punto 12: Filtro ampliado de plazos incluyendo mayores a 20 días
         if (urgencia !== "TODOS") {
-          const sem = calcularSemaforo(p.fecha_limite_oferta);
-          if (urgencia === "24H" && (sem.horas <= 0 || sem.horas > 24)) return false;
-          if (urgencia === "72H" && (sem.horas <= 0 || sem.horas > 72)) return false;
+          if (sem.horas <= 0) return false;
+          if (urgencia === "24H" && sem.horas > 24) return false;
+          if (urgencia === "3D" && sem.dias > 3) return false;
+          if (urgencia === "7D" && sem.dias > 7) return false;
+          if (urgencia === "15D" && (sem.dias < 8 || sem.dias > 15)) return false;
+          if (urgencia === "20D" && (sem.dias < 16 || sem.dias > 20)) return false;
+          if (urgencia === "MAS_20D" && sem.dias <= 20) return false;
         }
 
         if (texto) {
@@ -929,17 +1178,20 @@
       document.getElementById("contador-explorar").innerText = filtrados.length;
       const contenedor = document.getElementById("lista-explorar");
       if (filtrados.length === 0) {
-        contenedor.innerHTML = `<div class="bg-white rounded-3xl p-6 text-center text-xs font-bold text-slate-500 border-2 border-amber-200">No se encontraron procesos con esos filtros.</div>`;
+        contenedor.innerHTML = `<div class="bg-white rounded-3xl p-6 text-center text-xs font-bold text-slate-500 border-2 border-amber-200">No se encontraron convocatorias vigentes con esos criterios.</div>`;
         return;
       }
       contenedor.innerHTML = filtrados.map(p => crearTarjetaProceso(p, false)).join("");
     }
 
+    // =========================================================================
+    // 8. GUARDAR Y GESTIONAR PERFILES DE EMPRESA
+    // =========================================================================
     function prepararNuevoPerfil() {
-      document.getElementById("titulo-form-perfil").innerText = "Registrar Nueva Empresa";
-      document.getElementById("badge-modo-perfil").innerText = "NUEVO REGISTRO";
-      document.getElementById("badge-estado-sunat").innerText = "Escribe 11 dígitos";
-      document.getElementById("badge-estado-sunat").className = "block text-center text-[10px] font-extrabold py-2.5 px-2 rounded-xl bg-slate-100 text-slate-500 border border-slate-200";
+      document.getElementById("titulo-form-perfil").innerText = "Registrar el Perfil de mi Empresa";
+      document.getElementById("badge-modo-perfil").innerText = "NUEVO";
+      document.getElementById("badge-estado-sunat").innerText = "Ingresa tu RUC";
+      document.getElementById("badge-estado-sunat").className = "block text-center text-[10px] font-extrabold py-2.5 px-2 rounded-xl bg-slate-100 text-slate-500 border border-slate-200 truncate";
       document.getElementById("info-direccion-sunat").classList.add("hidden");
       document.getElementById("perf-ruc").value = "";
       document.getElementById("perf-razon").value = "";
@@ -948,18 +1200,18 @@
       document.getElementById("perf-max").value = 500000;
       document.getElementById("perf-kw").value = "";
       document.getElementById("perf-ex").value = "";
-      document.getElementById("perf-deptos").value = "LIMA, CALLAO";
+      departamentosSeleccionados = ["LIMA", "CALLAO"];
+      renderizarChipsDepartamentos();
       document.getElementById("perf-cm").checked = true;
       document.getElementById("perf-ps").checked = true;
       document.querySelectorAll(".chk-objeto").forEach(chk => {
         chk.checked = (chk.value === "BIENES" || chk.value === "SERVICIOS");
       });
-      document.getElementById("perf-ruc").focus();
     }
 
     function llenarFormularioPerfil(p) {
       document.getElementById("titulo-form-perfil").innerText = `Editar: ${p.razon_social}`;
-      document.getElementById("badge-modo-perfil").innerText = "PERFIL ACTIVO";
+      document.getElementById("badge-modo-perfil").innerText = "ACTIVO";
       document.getElementById("perf-ruc").value = p.ruc || "";
       document.getElementById("perf-razon").value = p.razon_social || "";
       document.getElementById("perf-exp").value = p.experiencia_acumulada_soles || 0;
@@ -967,7 +1219,10 @@
       document.getElementById("perf-max").value = p.monto_maximo_interes || 500000;
       document.getElementById("perf-kw").value = (p.palabras_clave || []).join(", ");
       document.getElementById("perf-ex").value = (p.palabras_excluidas || []).join(", ");
-      document.getElementById("perf-deptos").value = (p.departamentos_interes || []).join(", ");
+      departamentosSeleccionados = (p.departamentos_interes && p.departamentos_interes.length)
+        ? [...p.departamentos_interes]
+        : ["LIMA"];
+      renderizarChipsDepartamentos();
       document.getElementById("perf-cm").checked = p.incluir_contratos_menores !== false;
       document.getElementById("perf-ps").checked = p.incluir_procedimientos_seleccion !== false;
 
@@ -981,12 +1236,12 @@
       const ruc = document.getElementById("perf-ruc").value.trim();
       const razon = document.getElementById("perf-razon").value.trim();
       if (!ruc || !razon) {
-        alert("Por favor ingresa el RUC y el Nombre de la Empresa.");
+        alert("Por favor completa el número de RUC y el nombre de tu empresa.");
         return;
       }
 
       const btn = document.getElementById("btn-guardar");
-      btn.innerText = "Guardando en Supabase...";
+      btn.innerText = "Guardando perfil...";
 
       const objetos = Array.from(document.querySelectorAll(".chk-objeto"))
         .filter(c => c.checked)
@@ -994,7 +1249,6 @@
 
       const kw = document.getElementById("perf-kw").value.split(",").map(s => s.trim()).filter(Boolean);
       const ex = document.getElementById("perf-ex").value.split(",").map(s => s.trim()).filter(Boolean);
-      const deptos = document.getElementById("perf-deptos").value.split(",").map(s => s.trim().toUpperCase()).filter(Boolean);
 
       const payload = {
         ruc,
@@ -1005,7 +1259,7 @@
         monto_maximo_interes: Number(document.getElementById("perf-max").value || 500000),
         palabras_clave: kw.length ? kw : ["servicio"],
         palabras_excluidas: ex,
-        departamentos_interes: deptos.length ? deptos : ["LIMA"],
+        departamentos_interes: departamentosSeleccionados.length ? departamentosSeleccionados : ["LIMA"],
         incluir_contratos_menores: document.getElementById("perf-cm").checked,
         incluir_procedimientos_seleccion: document.getElementById("perf-ps").checked
       };
@@ -1018,34 +1272,37 @@
 
       if (error) {
         alert("Error al guardar: " + error.message);
-        btn.innerText = "💾 Guardar Perfil y Ver Mis Oportunidades";
+        btn.innerText = "Guardar mi Perfil y Ver Oportunidades";
         return;
       }
+
+      // Punto 5: Asociar este perfil exclusivamente con este dispositivo
+      registrarIdPerfilEnEsteDispositivo(data.id);
 
       btn.innerText = "✅ ¡Perfil Guardado!";
       await recargarDatos(data.id);
       setTimeout(() => {
-        btn.innerText = "💾 Guardar Perfil y Ver Mis Oportunidades";
+        btn.innerText = "Guardar mi Perfil y Ver Oportunidades";
         irAVista("parati");
-      }, 500);
+      }, 450);
     }
 
     async function eliminarEmpresa(id, nombre) {
-      if (!confirm(`¿Seguro que deseas eliminar el perfil de "${nombre}"?`)) return;
-      const { error } = await sb.from("perfiles_empresa").delete().eq("id", id);
-      if (error) {
-        alert("No se pudo eliminar: " + error.message);
-        return;
-      }
+      if (!confirm(`¿Deseas quitar el perfil de "${nombre}" de este dispositivo?`)) return;
+      quitarIdPerfilDeEsteDispositivo(id);
+      await sb.from("perfiles_empresa").delete().eq("id", id);
       await recargarDatos();
     }
 
+    // =========================================================================
+    // 9. FUNCIONES DEL PANEL ADMINISTRADOR (CARGA EXCEL Y DEPURACIÓN)
+    // =========================================================================
     function importarExcelSEACE(event) {
       const file = event.target.files[0];
       if (!file) return;
       const estado = document.getElementById("estado-importacion");
       estado.classList.remove("hidden");
-      estado.innerText = "⏳ Leyendo archivo del SEACE...";
+      estado.innerText = "⏳ Procesando archivo...";
 
       const reader = new FileReader();
       reader.onload = async (e) => {
@@ -1062,7 +1319,7 @@
 
           const ahora = new Date();
           const lote = filas.map((f, idx) => {
-            const nomenclatura = f["Nomenclatura"] || f["NOMENCLATURA"] || f["N° Requerimiento"] || `SEACE-${idx + 1}`;
+            const nomenclatura = f["Nomenclatura"] || f["NOMENCLATURA"] || f["N° Requerimiento"] || `PROC-${idx + 1}`;
             const entidad = f["Nombre o Sigla de la Entidad"] || f["Entidad"] || f["ENTIDAD"] || "ENTIDAD PÚBLICA";
             const objetoRaw = String(f["Objeto de Contratación"] || f["Objeto"] || "SERVICIOS").toUpperCase();
             let objeto = "SERVICIOS";
@@ -1070,11 +1327,13 @@
             else if (objetoRaw.includes("CONSULT")) objeto = "CONSULTORIA DE OBRAS";
             else if (objetoRaw.includes("OBRA")) objeto = "OBRAS";
 
-            const descripcion = f["Descripción del Objeto"] || f["Descripcion"] || "Proceso importado del SEACE";
+            const descripcion = f["Descripción del Objeto"] || f["Descripcion"] || "Convocatoria pública vigente";
             const depto = String(f["Departamento"] || f["DEPARTAMENTO"] || "LIMA").toUpperCase().trim();
             const montoRaw = f["Valor Referencial / Valor Estimado"] || f["Monto"] || "38500";
             const monto = Number(String(montoRaw).replace(/[^0-9.]/g, "")) || 38500;
-            const esMenor = String(nomenclatura).toUpperCase().includes("REQ") || String(nomenclatura).toUpperCase().includes("CM");
+            const nomUp = String(nomenclatura).toUpperCase();
+            const esMenor = nomUp.includes("REQ") || nomUp.includes("CM");
+            const diasPlazo = (nomUp.startsWith("LP-") || nomUp.startsWith("CP-")) ? 22 : (esMenor ? 3 : 8);
 
             return {
               codigo_unico: `REAL-${String(nomenclatura).replace(/\s+/g, "-")}`,
@@ -1088,16 +1347,18 @@
               origen_monto: esMenor ? "TOPE_8_UIT" : "PUBLICADO",
               experiencia_requerida_aprox: monto * 0.8,
               fecha_publicacion: ahora.toISOString(),
-              fecha_limite_oferta: new Date(ahora.getTime() + 4 * 86400000).toISOString(),
+              fecha_limite_oferta: new Date(ahora.getTime() + diasPlazo * 86400000).toISOString(),
               estado: "VIGENTE",
-              url_documento: esMenor ? "https://prod6.seace.gob.pe/buscador-publico/contrataciones" : "https://prod2.seace.gob.pe/seacebus-uiwd-pub/buscadorPublico/buscadorPublico.xhtml"
+              url_documento: esMenor
+                ? "https://prep6.seace.gob.pe/buscador-publico/contrataciones"
+                : "https://prod2.seace.gob.pe/seacebus-uiwd-pub/buscadorPublico/buscadorPublico.xhtml"
             };
           });
 
           const { error } = await sb.from("procesos_seace").upsert(lote, { onConflict: "codigo_unico" });
           if (error) throw error;
 
-          estado.innerText = `✅ ¡Se importaron ${lote.length} procesos reales a tu base de datos!`;
+          estado.innerText = `✅ ¡Se cargaron ${lote.length} procesos a la base de datos!`;
           await recargarDatos();
         } catch (err) {
           estado.innerText = `❌ Error al importar: ${err.message}`;
@@ -1119,7 +1380,7 @@
       const objeto = document.getElementById("nuevo-objeto").value;
       const depto = (document.getElementById("nuevo-depto").value || "LIMA").toUpperCase().trim();
       const monto = Number(document.getElementById("nuevo-monto").value || 35000);
-      const dias = Number(document.getElementById("nuevo-dias").value || 3);
+      const dias = Number(document.getElementById("nuevo-dias").value || 5);
       const ahora = new Date();
 
       const nuevo = {
@@ -1149,27 +1410,42 @@
     }
 
     async function eliminarProcesosDemo() {
-      if (!confirm("¿Deseas borrar los procesos de prueba (CM-2026-..., PS-2026-...)?")) return;
+      if (!confirm("¿Deseas depurar todos los procesos vencidos y de demostración de la base de datos?")) return;
+      const ahoraISO = new Date().toISOString();
       const codigosDemo = [
         "CM-2026-001", "PS-2026-002", "PS-2026-003", "CM-2026-004",
         "CM-2026-88412", "PS-2026-99104", "CM-2026-88490", "PS-2026-99315", "CM-2026-88510"
       ];
-      const { error } = await sb.from("procesos_seace").delete().in("codigo_unico", codigosDemo);
-      if (error) {
-        alert("Error al borrar demo: " + error.message);
-        return;
-      }
-      alert("🗑️ Procesos de prueba eliminados.");
+      await sb.from("procesos_seace").delete().lt("fecha_limite_oferta", ahoraISO);
+      await sb.from("procesos_seace").delete().in("codigo_unico", codigosDemo);
+      alert("✅ Base de datos depurada correctamente.");
       await recargarDatos();
     }
 
     function compartirResumenWhatsapp() {
       const emp = perfilActual ? perfilActual.razon_social : "Mi Empresa";
-      const msg = encodeURIComponent(`📊 *Radar SEACE Activo*\nEmpresa: *${emp}*\nOportunidades compatibles hoy: *${ultimasOportunidadesMatch.length}*`);
+      const msg = encodeURIComponent(
+        `📊 *Radar PLADICOP - Oportunidades con el Estado*\n` +
+        `Empresa: *${emp}*\n` +
+        `Oportunidades compatibles hoy: *${ultimasOportunidadesMatch.length}*\n` +
+        `Desarrollado por Vértice: https://www.youtube.com/@vertice_estrategia`
+      );
       window.open(`https://wa.me/?text=${msg}`, "_blank");
     }
 
+    // Supabase Realtime (WebSockets) para actualización automática
+    sb.channel("canal-procesos-pladicop")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "procesos_seace" },
+        async () => {
+          await recargarDatos(perfilActual ? perfilActual.id : null);
+        }
+      )
+      .subscribe();
+
     // Inicializar al abrir
+    renderizarChipsDepartamentos();
     recargarDatos();
   </script>
 </body>
