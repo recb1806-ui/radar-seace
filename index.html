@@ -59,7 +59,7 @@
     <span class="text-[10px] font-extrabold tracking-wider uppercase" style="writing-mode: vertical-rl;">MENÚ</span>
   </button>
 
-  <!-- MENÚ LATERAL DESLIZABLE (CONFIGURACIÓN, NORMATIVIDAD, ADMIN Y CRÉDITOS VÉRTICE • RCB) -->
+  <!-- MENÚ LATERAL DESLIZABLE (CONFIGURACIÓN, NORMATIVIDAD, INSTALACIÓN VÉRTICE Y ADMIN) -->
   <div id="drawer-overlay" onclick="toggleMenu(false)" class="fixed inset-0 bg-slate-950/50 z-40 hidden backdrop-blur-xs"></div>
   <aside id="drawer-menu" class="fixed top-0 left-0 bottom-0 w-76 max-w-[85vw] bg-white z-50 shadow-2xl transform -translate-x-full transition-transform duration-300 flex flex-col justify-between border-r-2 border-amber-300 overflow-y-auto">
     <div>
@@ -74,6 +74,29 @@
       </div>
 
       <div class="p-3.5 space-y-4">
+        <!-- SECCIÓN EXCLUSIVA EN MENÚ LATERAL: INSTALAR APP VÉRTICE Y COMPARTIR -->
+        <div class="bg-slate-900 text-white rounded-2xl p-3.5 border border-amber-400/60 space-y-2.5 shadow-sm">
+          <div class="flex items-center gap-2.5">
+            <img src="./icon-192.png" onerror="this.style.display='none'" alt="Logo" class="w-9 h-9 rounded-xl border border-amber-400 shrink-0" />
+            <div class="min-w-0">
+              <span class="text-[9px] font-extrabold uppercase tracking-wider text-amber-400 block">App Oficial Vértice</span>
+              <p id="txt-drawer-instalar" class="text-[11px] text-slate-200 leading-tight font-medium">
+                Instala la App en tu celular o compártela:
+              </p>
+            </div>
+          </div>
+          <div id="grid-drawer-instalar" class="grid grid-cols-2 gap-2">
+            <button id="btn-drawer-instalar" onclick="instalarAppEnCelular()" class="bg-amber-400 hover:bg-amber-500 text-slate-950 text-xs font-extrabold py-2 px-2.5 rounded-xl flex items-center justify-center gap-1.5 shadow transition active:scale-95">
+              <span>📲</span>
+              <span>Instalar App</span>
+            </button>
+            <button id="btn-drawer-compartir" onclick="compartirEnlaceInstalacion()" class="bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-400/40 text-xs font-extrabold py-2 px-2.5 rounded-xl flex items-center justify-center gap-1.5 transition active:scale-95">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
+              <span>Compartir</span>
+            </button>
+          </div>
+        </div>
+
         <!-- CONFIGURACIÓN DE PLAZOS VIGENTES VS CERRADOS -->
         <div class="bg-amber-50/80 border border-amber-300 rounded-2xl p-3 space-y-2">
           <p class="text-[11px] font-extrabold text-slate-800 uppercase">Preferencia de Resultados</p>
@@ -103,19 +126,6 @@
             <span>⚖️ Ley N° 32069 y Reglamento</span>
             <span class="text-sky-600 text-[11px]">Abrir ↗</span>
           </a>
-        </div>
-
-        <!-- BOTÓN DE INSTALACIÓN Y COMPARTIR EN EL MENÚ LATERAL -->
-        <div class="bg-slate-100 border border-slate-200 rounded-2xl p-3 space-y-2">
-          <p class="text-[11px] font-extrabold text-slate-700 uppercase">Aplicación Móvil</p>
-          <div class="grid grid-cols-2 gap-2">
-            <button onclick="instalarAppEnCelular()" class="bg-amber-400 hover:bg-amber-500 text-slate-950 text-[11px] font-extrabold py-2 px-2 rounded-xl shadow-xs transition">
-              📲 Instalar App
-            </button>
-            <button onclick="compartirEnlaceInstalacion()" class="bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 text-[11px] font-extrabold py-2 px-2 rounded-xl transition">
-              🔗 Compartir
-            </button>
-          </div>
         </div>
 
         <!-- CARGA DE DATOS EN EL MENÚ FLOTANTE CON CLAVE "admin" -->
@@ -192,30 +202,9 @@
     <div id="alerta-sistema" class="hidden bg-red-50 border-2 border-red-300 text-red-900 rounded-2xl p-3 text-xs"></div>
 
     <!-- =================================================================== -->
-    <!-- VISTA 1: INICIO (BANNER INSTALABLE + 3 OPCIONES PRINCIPALES)        -->
+    <!-- VISTA 1: INICIO (LIMPIA, SIN CARTEL DE INSTALACIÓN)                 -->
     <!-- =================================================================== -->
     <section id="vista-inicio" class="space-y-3.5">
-
-      <!-- BANNER DE INSTALACIÓN DIRECTA Y COMPARTIR APP -->
-      <div id="banner-instalar-app" class="bg-slate-900 text-white rounded-3xl p-3.5 shadow-md border-2 border-amber-400 flex items-center justify-between gap-2.5">
-        <div class="flex items-center gap-2.5 min-w-0">
-          <img src="./icon-192.png" onerror="this.style.display='none'" alt="Logo" class="w-11 h-11 rounded-2xl border border-amber-400 shrink-0" />
-          <div class="min-w-0">
-            <span class="text-[9px] font-extrabold uppercase tracking-wider text-amber-400 block">App Oficial • Vértice</span>
-            <h3 class="text-xs font-extrabold truncate">Instala Radar PLADICOP</h3>
-            <p class="text-[10px] text-slate-300 leading-tight">Acceso directo en tu celular</p>
-          </div>
-        </div>
-        <div class="flex flex-col gap-1 shrink-0">
-          <button onclick="instalarAppEnCelular()" class="bg-amber-400 hover:bg-amber-500 text-slate-950 text-[11px] font-extrabold px-3 py-1.5 rounded-xl shadow active:scale-95 transition">
-            📲 Instalar
-          </button>
-          <button onclick="compartirEnlaceInstalacion()" class="bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-400/40 text-[10px] font-bold px-3 py-1 rounded-xl active:scale-95 transition">
-            🔗 Compartir
-          </button>
-        </div>
-      </div>
-
       <div class="text-center px-2 pt-1">
         <h2 class="text-xl font-extrabold text-slate-900 leading-tight">¿Qué oportunidades buscamos hoy?</h2>
         <p class="text-xs text-slate-600 mt-1">Selecciona una opción para encontrar contratos con el Estado de forma sencilla</p>
@@ -288,7 +277,6 @@
           <button onclick="limpiarFiltros()" class="text-xs font-bold text-orange-700 underline">Limpiar filtros</button>
         </div>
 
-        <!-- Palabra clave -->
         <div>
           <label class="text-[11px] font-extrabold text-slate-700 uppercase">¿Qué producto, servicio o entidad buscas?</label>
           <input id="filtro-texto" type="text" oninput="renderExplorar()" placeholder="Ej: mantenimiento, mobiliario, consultoría, vigilancia..." class="w-full text-xs bg-white border-2 border-amber-300 rounded-xl px-3 py-2.5 mt-1 font-semibold focus:outline-none focus:border-amber-500" />
@@ -348,7 +336,6 @@
             </select>
           </div>
 
-          <!-- RANGOS DE PLAZO DE VENCIMIENTO INCLUYENDO > 20 DÍAS -->
           <div>
             <label class="text-[11px] font-extrabold text-slate-700 uppercase">Plazo Restante</label>
             <select id="filtro-urgencia" onchange="renderExplorar()" class="w-full text-xs bg-white border-2 border-amber-300 rounded-xl p-2 mt-1 font-bold">
@@ -363,7 +350,6 @@
           </div>
         </div>
 
-        <!-- Rango de Montos Mínimo y Máximo -->
         <div class="grid grid-cols-2 gap-2 pt-0.5">
           <div>
             <label class="text-[11px] font-extrabold text-slate-700 uppercase">Monto Mínimo (S/)</label>
@@ -388,7 +374,6 @@
     <!-- VISTA 4: REGISTRAR PERFIL Y CONSULTAR MIS PERFILES                  -->
     <!-- =================================================================== -->
     <section id="vista-perfiles" class="hidden space-y-4">
-      <!-- Lista de empresas registradas en este dispositivo -->
       <div class="card-warm-blue rounded-3xl p-4 space-y-3">
         <div class="flex items-center justify-between gap-2">
           <div class="min-w-0">
@@ -402,14 +387,12 @@
         <div id="lista-empresas-registradas" class="space-y-2"></div>
       </div>
 
-      <!-- Formulario de Registro / Edición de Perfil -->
       <div id="card-formulario-perfil" class="bg-white rounded-3xl p-4 shadow-sm border-2 border-amber-300 space-y-3.5">
         <div class="flex justify-between items-center border-b border-slate-100 pb-2">
           <h3 id="titulo-form-perfil" class="font-extrabold text-sm text-slate-900">Registrar el Perfil de mi Empresa</h3>
           <span id="badge-modo-perfil" class="bg-amber-100 text-amber-900 text-[10px] font-extrabold px-2.5 py-1 rounded-full">NUEVO</span>
         </div>
 
-        <!-- Campo RUC y Nombre de la Empresa -->
         <div class="space-y-2.5 bg-amber-50/60 p-3 rounded-2xl border border-amber-200">
           <div class="grid grid-cols-12 gap-2 items-end">
             <div class="col-span-7">
@@ -473,7 +456,6 @@
           <input id="perf-ex" type="text" placeholder="Ej: limpieza, vehículos, combustible" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-xl p-2.5 mt-1 font-semibold" />
         </div>
 
-        <!-- COMBO PREDEFINIDO DE DEPARTAMENTOS + ETIQUETAS FÁCILES DE AGREGAR Y QUITAR -->
         <div class="space-y-2 bg-slate-50 p-3 rounded-2xl border border-slate-200">
           <div class="flex items-center justify-between">
             <label class="text-xs font-bold text-slate-700">Departamentos donde trabajas</label>
@@ -545,7 +527,6 @@
         <button onclick="irAVista('inicio')" class="bg-slate-800 text-white text-xs font-bold px-3 py-1.5 rounded-xl">Salir</button>
       </div>
 
-      <!-- Subir Excel / CSV descargado de PLADICOP / SEACE -->
       <div class="card-warm-orange rounded-3xl p-5 space-y-3">
         <span class="bg-orange-500 text-white text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase">Carga Masiva</span>
         <h3 class="text-base font-extrabold text-slate-900">Importar Reporte Excel / CSV</h3>
@@ -556,7 +537,6 @@
         <p id="estado-importacion" class="text-xs font-bold text-emerald-700 hidden"></p>
       </div>
 
-      <!-- Registrar una convocatoria manualmente -->
       <div class="bg-white rounded-3xl p-5 border-2 border-amber-300 space-y-3">
         <h3 class="font-extrabold text-sm text-slate-900">+ Agregar Convocatoria Manualmente</h3>
         <div class="grid grid-cols-2 gap-2">
@@ -584,7 +564,6 @@
         </button>
       </div>
 
-      <!-- Depurar procesos vencidos manualmente -->
       <div class="bg-red-50 rounded-3xl p-4 border-2 border-red-200 flex items-center justify-between gap-3">
         <div>
           <h4 class="text-xs font-extrabold text-red-900">Depurar Procesos Vencidos / Demo</h4>
@@ -598,7 +577,7 @@
 
   </main>
 
-  <!-- BARRA DE NAVEGACIÓN INFERIOR LIMPIA CON ICONOS VECTORIALES PROFESIONALES -->
+  <!-- BARRA DE NAVEGACIÓN INFERIOR LIMPIA -->
   <nav class="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-amber-400 via-amber-400 to-yellow-500 border-t-2 border-amber-600/30 z-30 shadow-lg">
     <div class="max-w-md mx-auto grid grid-cols-4 text-center">
       <button onclick="irAVista('inicio')" id="nav-inicio" class="py-2 flex flex-col items-center justify-center gap-0.5 text-slate-950 font-extrabold text-[11px] bg-amber-300/60">
@@ -637,11 +616,9 @@
     let ultimasOportunidadesMatch = [];
     let departamentosSeleccionados = ["LIMA", "CALLAO"];
 
-    // Por defecto SIEMPRE se ocultan los procesos con plazo cerrado (true)
     let ocultarPlazosCerrados = localStorage.getItem("pladicop_ocultar_cerrados") !== "false";
     document.getElementById("chk-ocultar-cerrados").checked = ocultarPlazosCerrados;
 
-    // Lista privada de IDs de perfiles creados en este dispositivo
     function obtenerIdsPerfilesDeEsteDispositivo() {
       try {
         const guardado = JSON.parse(localStorage.getItem("pladicop_mis_perfiles_ids") || "[]");
@@ -683,12 +660,13 @@
     };
 
     // =========================================================================
-    // 2. NAVEGACIÓN, MENÚ LATERAL Y ACCESO ADMIN CON CLAVE "admin"
+    // 2. NAVEGACIÓN, MENÚ LATERAL Y ACCESO ADMIN
     // =========================================================================
     function toggleMenu(abrir) {
       const overlay = document.getElementById("drawer-overlay");
       const menu = document.getElementById("drawer-menu");
       if (abrir) {
+        actualizarVistaInstalacionMenu();
         overlay.classList.remove("hidden");
         menu.classList.remove("-translate-x-full");
       } else {
@@ -831,7 +809,6 @@
       return "Cuantía Oficial";
     }
 
-    // Copia el código exacto del proceso al portapapeles y abre el portal directo
     function abrirProcesoDirecto(nomenclatura, urlDestino) {
       if (navigator.clipboard && nomenclatura) {
         navigator.clipboard.writeText(nomenclatura).catch(() => {});
@@ -1191,7 +1168,6 @@
         if (depto !== "TODOS" && (p.departamento || "").toUpperCase() !== depto) return false;
 
         const montoProc = Number(p.monto_referencial || 0);
-        // Si tiene cuantía pública (> 0), evaluar el rango; si es Valor Oculto (0), permitirlo salvo que el usuario exija un monto mínimo
         if (montoProc > 0) {
           if (montoProc < montoMin || montoProc > montoMax) return false;
         } else if (montoMin > 0) {
@@ -1473,9 +1449,41 @@
     }
 
     // =========================================================================
-    // 10. MOTOR DE INSTALACIÓN PWA, COMPARTIR ENLACE Y SUPABASE REALTIME
+    // 10. DETECCIÓN DE APP INSTALADA EN MENÚ LATERAL Y COMPARTIR
     // =========================================================================
     let eventoInstalacionPWA = null;
+
+    function estaAppInstaladaEnDispositivo() {
+      const modoStandalone =
+        window.matchMedia("(display-mode: standalone)").matches ||
+        window.navigator.standalone === true;
+      const yaMarcada = localStorage.getItem("pladicop_app_instalada") === "true";
+
+      if (modoStandalone && !yaMarcada) {
+        localStorage.setItem("pladicop_app_instalada", "true");
+      }
+      return modoStandalone || yaMarcada;
+    }
+
+    function actualizarVistaInstalacionMenu() {
+      const btnInstalar = document.getElementById("btn-drawer-instalar");
+      const gridBotones = document.getElementById("grid-drawer-instalar");
+      const txtMensaje = document.getElementById("txt-drawer-instalar");
+      if (!btnInstalar || !gridBotones) return;
+
+      if (estaAppInstaladaEnDispositivo()) {
+        // Si ya está instalada, oculta el botón Instalar y deja solo el botón Compartir a ancho completo
+        btnInstalar.classList.add("hidden");
+        gridBotones.classList.remove("grid-cols-2");
+        gridBotones.classList.add("grid-cols-1");
+        if (txtMensaje) txtMensaje.innerText = "Comparte la App con otros empresarios:";
+      } else {
+        btnInstalar.classList.remove("hidden");
+        gridBotones.classList.remove("grid-cols-1");
+        gridBotones.classList.add("grid-cols-2");
+        if (txtMensaje) txtMensaje.innerText = "Instala la App en tu celular o compártela:";
+      }
+    }
 
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
@@ -1486,17 +1494,23 @@
     window.addEventListener("beforeinstallprompt", (e) => {
       e.preventDefault();
       eventoInstalacionPWA = e;
+      actualizarVistaInstalacionMenu();
     });
 
     window.addEventListener("appinstalled", () => {
-      const banner = document.getElementById("banner-instalar-app");
-      if (banner) banner.classList.add("hidden");
+      localStorage.setItem("pladicop_app_instalada", "true");
+      eventoInstalacionPWA = null;
+      actualizarVistaInstalacionMenu();
     });
 
     async function instalarAppEnCelular() {
       if (eventoInstalacionPWA) {
         eventoInstalacionPWA.prompt();
-        await eventoInstalacionPWA.userChoice;
+        const resultado = await eventoInstalacionPWA.userChoice;
+        if (resultado && resultado.outcome === "accepted") {
+          localStorage.setItem("pladicop_app_instalada", "true");
+          actualizarVistaInstalacionMenu();
+        }
         eventoInstalacionPWA = null;
       } else {
         alert(
@@ -1530,6 +1544,7 @@
       .subscribe();
 
     // Inicializar al abrir
+    actualizarVistaInstalacionMenu();
     renderizarChipsDepartamentos();
     recargarDatos();
   </script>
